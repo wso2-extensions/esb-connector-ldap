@@ -29,7 +29,6 @@
     <url>http://wso2.org</url>
     <properties>
         <connector.name>ldap</connector.name>
-        <connector.version>1.0.0</connector.version>
         <test.framework.version>4.2.0</test.framework.version>
         <esb.version>4.9.0</esb.version>
         <carbon.kernel.version>4.4.1</carbon.kernel.version>
@@ -147,6 +146,12 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+     <scm>
+        <connection>scm:git:https://github.com/wso2-extensions/esb-connector-ldap.git</connection>
+        <url>https://github.com/wso2-extensions/esb-connector-ldap.git</url>
+        <developerConnection>scm:git:https://github.com/wso2-extensions/esb-connector-ldap</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
     <build>
         <plugins>
             <plugin>
@@ -194,7 +199,7 @@
                             <goal>attached</goal>
                         </goals>
                         <configuration>
-                            <finalName>${connector.name}-connector-${connector.version}</finalName>
+                            <finalName>${connector.name}-connector-${version}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <filters>
                                 <filter>src/main/assembly/filter.properties</filter>
