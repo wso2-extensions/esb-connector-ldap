@@ -59,9 +59,7 @@ public class Authenticate extends AbstractConnector {
         if(secureConnection)
         	env.put(Context.SECURITY_PROTOCOL, "ssl");
         if(disableSSLCertificateChecking)
-        	env.put("java.naming.ldap.factory.socket", "org.wso2.carbon.connector.security.MySSLSocketFactory");        
-
-        org.apache.axis2.context.MessageContext axis2MessageContext = ((Axis2MessageContext) messageContext).getAxis2MessageContext();
+        	env.put("java.naming.ldap.factory.socket", "org.wso2.carbon.connector.security.MySSLSocketFactory");
 
         boolean logged = false;
         DirContext ctx = null;
