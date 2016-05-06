@@ -41,6 +41,7 @@ import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.util.ConnectorUtils;
 
 public class SearchEntry extends AbstractConnector {
+	public static final String ONLY_ONE_REFERENCE = "onlyOneReference";
     public static final String OBJECT_CLASS = "objectClass";
     public static final String FILTERS = "filters";
     public static final String DN = "dn";
@@ -53,6 +54,7 @@ public class SearchEntry extends AbstractConnector {
         String filter = (String) getParameter(messageContext, FILTERS);
         String dn = (String) getParameter(messageContext, DN);
         String returnAttributes[] = ((String) getParameter(messageContext, ATTRIBUTES)).split(",");
+        boolean onlyOneReference = Boolean.valueOf((String) getParameter(messageContext, ONLY_ONE_REFERENCE));
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE, "ns");
@@ -69,30 +71,18 @@ public class SearchEntry extends AbstractConnector {
 
                 SearchResult entityResult = null;
 
-                if (results != null && results.hasMore()) {
-                    while (results.hasMore()) {
-                        entityResult = results.next();
-                        Attributes attributes = entityResult.getAttributes();
-                        Attribute attribute;
-                        OMElement entry = factory.createOMElement("entry", ns);
-                        OMElement dnattr = factory.createOMElement("dn", ns);
-                        dnattr.setText(entityResult.getNameInNamespace());
-                        entry.addChild(dnattr);
-
-                        for (int i = 0; i < returnAttributes.length; i++) {
-                            attribute = attributes.get(returnAttributes[i]);
-                            if (attribute != null) {
-                                NamingEnumeration ne = attribute.getAll();
-                                while (ne.hasMoreElements()) {
-                                    String value = (String) ne.next();
-                                    OMElement attr = factory.createOMElement(returnAttributes[i], ns);
-                                    attr.setText(value);
-                                    entry.addChild(attr);
-                                }
-                            }
-                        }
-                        result.addChild(entry);
-                    }
+                if(!onlyOneReference){
+	                if (results != null && results.hasMore()) {
+	                    while (results.hasMore()) {
+	                    	entityResult = results.next();
+	                        result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));	                        
+	                    }
+	                }
+                }else{
+                	entityResult = makeSureOnlyOneMatch(results);
+                	if(entityResult == null)
+                		throw new NamingException("Multiple objects for the searched target have been found. Try to change onlyOneReference option");
+                	result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
                 }
 
                 LDAPUtils.preparePayload(messageContext, result);
@@ -112,6 +102,51 @@ public class SearchEntry extends AbstractConnector {
         }
 
     }
+    
+    private OMElement prepareNode(SearchResult entityResult, OMFactory factory, OMNamespace ns, String returnAttributes[]) throws NamingException
+    {
+    	Attributes attributes = entityResult.getAttributes();
+        Attribute attribute;
+        OMElement entry = factory.createOMElement("entry", ns);
+        OMElement dnattr = factory.createOMElement("dn", ns);
+        dnattr.setText(entityResult.getNameInNamespace());
+        entry.addChild(dnattr);       
+
+        for (int i = 0; i < returnAttributes.length; i++) {
+            attribute = attributes.get(returnAttributes[i]);
+            if (attribute != null) {            	
+            	NamingEnumeration ne = null;
+            	ne = attribute.getAll();
+                while (ne.hasMoreElements()) {
+                    String value = (String) ne.next();
+                    OMElement attr = factory.createOMElement(returnAttributes[i], ns);
+                    attr.setText(value);
+                    entry.addChild(attr);
+                }
+            }
+        }    	
+    	
+    	return entry;
+    }    
+    
+    private SearchResult makeSureOnlyOneMatch(NamingEnumeration<SearchResult> results)
+    {
+    	SearchResult searchResult = null;
+    	
+        if(results.hasMoreElements()) 
+        {
+             searchResult = (SearchResult) results.nextElement();
+
+            // Make sure there is not another item available, there should be only 1 match
+            if(results.hasMoreElements()) 
+            {
+            	// Here the code has matched multiple objects for the searched target 
+                return null;
+            }
+        }
+        
+        return searchResult;
+    }    
 
     private NamingEnumeration<SearchResult> searchInUserBase(String dn,
                                                              String searchFilter, String[] returningAttributes, int searchScope,

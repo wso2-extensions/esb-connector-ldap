@@ -192,18 +192,18 @@
                 <executions>
                     <execution>
                         <id>email-library</id>
-                        <phase>compile</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>attached</goal>
                         </goals>
                         <configuration>
                             <finalName>${connector.name}-connector-${version}</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
+                            <appendAssemblyId>true</appendAssemblyId>
                             <filters>
-                                <filter>src/main/assembly/filter.properties</filter>
+                                <filter>${basedir}/src/main/assembly/filter.properties</filter>
                             </filters>
                             <descriptors>
-                                <descriptor>src/main/assembly/assemble-connector.xml</descriptor>
+                                <descriptor>${basedir}/src/main/assembly/assemble-connector.xml</descriptor>
                             </descriptors>
                         </configuration>
                     </execution>

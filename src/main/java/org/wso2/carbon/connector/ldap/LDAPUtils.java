@@ -26,7 +26,6 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 
-
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -48,6 +47,8 @@ public class LDAPUtils {
         String providerUrl = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.PROVIDER_URL);
         String securityPrincipal = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURITY_PRINCIPAL);
         String securityCredentials = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURITY_CREDENTIALS);
+        boolean secureConnection = Boolean.valueOf(LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURE_CONNECTION));
+        boolean disableSSLCertificateChecking = Boolean.valueOf(LDAPUtils.lookupContextParams(messageContext, LDAPConstants.DISABLE_SSL_CERT_CHECKING));        
 
         Hashtable env = new Hashtable();
         env.put(Context.INITIAL_CONTEXT_FACTORY,
@@ -56,6 +57,10 @@ public class LDAPUtils {
         env.put(Context.PROVIDER_URL, providerUrl);
         env.put(Context.SECURITY_PRINCIPAL, securityPrincipal);
         env.put(Context.SECURITY_CREDENTIALS, securityCredentials);
+        if(secureConnection)
+        	env.put(Context.SECURITY_PROTOCOL, "ssl");
+        if(disableSSLCertificateChecking)
+        	env.put("java.naming.ldap.factory.socket", "org.wso2.carbon.connector.security.MySSLSocketFactory");                
 
         DirContext ctx = null;
         ctx = new InitialDirContext(env);
