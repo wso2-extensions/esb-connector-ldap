@@ -16,16 +16,28 @@
 ~  specific language governing permissions and limitations
 ~  under the License.
 -->
-<template xmlns="http://ws.apache.org/ns/synapse" name="init">
-    <parameter name="providerUrl" description="URI of the LDAP directory."/>
-    <parameter name="securityPrincipal"
-               description="username of the user used to log in to LDAP."/>
-    <parameter name="securityCredentials"
-               description="password of the user used to log in to LDAP."/>
-    <sequence>
-        <property name="providerUrl" expression="$func:providerUrl"/>
-        <property name="securityPrincipal" expression="$func:securityPrincipal"/>
-        <property name="securityCredentials" expression="$func:securityCredentials"/>
-        <class name="org.wso2.carbon.connector.ldap.Init"/>
-    </sequence>
+<template name="init" xmlns="http://ws.apache.org/ns/synapse">
+  <parameter name="secureConnection"/>
+  <parameter name="disableSSLCertificateChecking"/>
+  <parameter name="providerUrl"/>
+  <parameter name="securityPrincipal"/>
+  <parameter name="securityCredentials"/>
+  <sequence>
+    <property description="Boolean value for the connection."
+      expression="$func:secureConnection" name="secureConnection"
+      scope="default" type="STRING"/>
+    <property
+      description="Boolean value to whether check certificate or not."
+      expression="$func:disableSSLCertificateChecking"
+      name="disableSSLCertificateChecking" scope="default" type="STRING"/>
+    <property description="URI of the LDAP directory."
+      expression="$func:providerUrl" name="providerUrl" scope="default" type="STRING"/>
+    <property description="Username of the user used to log in to LDAP."
+      expression="$func:securityPrincipal" name="securityPrincipal"
+      scope="default" type="STRING"/>
+    <property description="Password of the user used to log in to LDAP."
+      expression="$func:securityCredentials" name="securityCredentials"
+      scope="default" type="STRING"/>
+    <class name="org.wso2.carbon.connector.ldap.Init"/>
+  </sequence>
 </template>

@@ -19,6 +19,8 @@
 package org.wso2.carbon.connector.ldap;
 
 public class LDAPConstants {
+	public static final String SECURE_CONNECTION = "secureConnection";
+	public static final String DISABLE_SSL_CERT_CHECKING = "disableSSLCertificateChecking";	
     public static final String PROVIDER_URL = "providerUrl";
     public static final String SECURITY_PRINCIPAL = "securityPrincipal";
     public static final String SECURITY_CREDENTIALS = "securityCredentials";

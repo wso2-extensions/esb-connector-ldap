@@ -16,14 +16,16 @@
 ~  specific language governing permissions and limitations
 ~  under the License.
 -->
-<template xmlns="http://ws.apache.org/ns/synapse" name="addEntry">
-    <parameter name="objectClass"/>
-    <parameter name="attributes"/>
-    <parameter name="dn"/>
-    <sequence>
-        <property name="objectClass" expression="$func:objectClass"/>
-        <property name="attributes" expression="$func:attributes"/>
-        <property name="dn" expression="$func:dn"/>
-        <class name="org.wso2.carbon.connector.ldap.AddEntry"/>
-    </sequence>
+<template name="addEntry" xmlns="http://ws.apache.org/ns/synapse">
+  <parameter name="objectClass"/>
+  <parameter name="attributes"/>
+  <parameter name="dn"/>
+  <sequence>
+    <property expression="$func:objectClass" name="objectClass"
+      scope="default" type="STRING"/>
+    <property expression="$func:attributes" name="attributes"
+      scope="default" type="STRING"/>
+    <property expression="$func:dn" name="dn" scope="default" type="STRING"/>
+    <class name="org.wso2.carbon.connector.ldap.AddEntry"/>
+  </sequence>
 </template>

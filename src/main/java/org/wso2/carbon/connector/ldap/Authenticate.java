@@ -43,6 +43,8 @@ public class Authenticate extends AbstractConnector {
         String providerUrl = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.PROVIDER_URL);
         String dn = (String) getParameter(messageContext, "dn");
         String password = (String) getParameter(messageContext, "password");
+        boolean secureConnection = Boolean.valueOf(LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURE_CONNECTION));
+        boolean disableSSLCertificateChecking = Boolean.valueOf(LDAPUtils.lookupContextParams(messageContext, LDAPConstants.DISABLE_SSL_CERT_CHECKING));
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE, "ns");
@@ -54,8 +56,10 @@ public class Authenticate extends AbstractConnector {
         env.put(Context.PROVIDER_URL, providerUrl);
         env.put(Context.SECURITY_PRINCIPAL, dn);
         env.put(Context.SECURITY_CREDENTIALS, password);
-
-        org.apache.axis2.context.MessageContext axis2MessageContext = ((Axis2MessageContext) messageContext).getAxis2MessageContext();
+        if(secureConnection)
+        	env.put(Context.SECURITY_PROTOCOL, "ssl");
+        if(disableSSLCertificateChecking)
+        	env.put("java.naming.ldap.factory.socket", "org.wso2.carbon.connector.security.MySSLSocketFactory");
 
         boolean logged = false;
         DirContext ctx = null;

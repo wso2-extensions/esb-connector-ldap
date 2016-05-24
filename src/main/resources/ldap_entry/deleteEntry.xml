@@ -16,10 +16,10 @@
 ~  specific language governing permissions and limitations
 ~  under the License.
 -->
-<template xmlns="http://ws.apache.org/ns/synapse" name="deleteEntry">
-    <parameter name="dn"/>
-    <sequence>
-        <property name="dn" expression="$func:dn"/>
-        <class name="org.wso2.carbon.connector.ldap.DeleteEntry"/>
-    </sequence>
+<template name="deleteEntry" xmlns="http://ws.apache.org/ns/synapse">
+  <parameter name="dn"/>
+  <sequence>
+    <property expression="$func:dn" name="dn" scope="default" type="STRING"/>
+    <class name="org.wso2.carbon.connector.ldap.DeleteEntry"/>
+  </sequence>
 </template>
