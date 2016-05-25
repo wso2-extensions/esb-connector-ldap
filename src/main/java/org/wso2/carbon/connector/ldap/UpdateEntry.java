@@ -44,8 +44,7 @@ public class UpdateEntry extends AbstractConnector {
 		String mode = (String) getParameter(messageContext, LDAPConstants.MODE);
 
 		OMFactory factory = OMAbstractFactory.getOMFactory();
-		OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE,
-		                                           LDAPConstants.NAMESPACE);
+		OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE, LDAPConstants.NAMESPACE);
 		OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
 		OMElement message = factory.createOMElement(LDAPConstants.MESSAGE, ns);
 
@@ -79,13 +78,11 @@ public class UpdateEntry extends AbstractConnector {
 				result.addChild(message);
 				LDAPUtils.preparePayload(messageContext, result);
 			} catch (NamingException e) { // LDAP Errors are catched
-				LDAPUtils.handleErrorResponse(messageContext,
-				                              LDAPConstants.ErrorConstants.UPDATE_ENTRY_ERROR, e);
+				LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.UPDATE_ENTRY_ERROR, e);
 				throw new SynapseException(e);
 			}
 		} catch (NamingException e) { //Authentication failures are catched
-			LDAPUtils.handleErrorResponse(messageContext,
-			                              LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
+			LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
 			throw new SynapseException(e);
 		}
 	}

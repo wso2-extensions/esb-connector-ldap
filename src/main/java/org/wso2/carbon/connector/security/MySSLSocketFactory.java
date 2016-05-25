@@ -39,7 +39,7 @@ public class MySSLSocketFactory extends SSLSocketFactory {
 			socketFactory = ctx.getSocketFactory();
 		} catch (Exception ex) {
 			ex.printStackTrace(System.err);
-	        /* handle exception */
+		    /* handle exception */
 		}
 	}
 
@@ -58,8 +58,7 @@ public class MySSLSocketFactory extends SSLSocketFactory {
 	}
 
 	@Override
-	public Socket createSocket(Socket socket, String string, int i, boolean bln)
-			throws IOException {
+	public Socket createSocket(Socket socket, String string, int i, boolean bln) throws IOException {
 		return socketFactory.createSocket(socket, string, i, bln);
 	}
 
@@ -69,8 +68,7 @@ public class MySSLSocketFactory extends SSLSocketFactory {
 	}
 
 	@Override
-	public Socket createSocket(String string, int i, InetAddress ia, int i1)
-			throws IOException, UnknownHostException {
+	public Socket createSocket(String string, int i, InetAddress ia, int i1) throws IOException, UnknownHostException {
 		return socketFactory.createSocket(string, i, ia, i1);
 	}
 

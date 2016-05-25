@@ -45,8 +45,7 @@ public class LDAPConstants {
 	public static final String REPLACE = "replace";
 	public static final String ADD = "add";
 	public static final String REMOVE = "remove";
-	public static final String COM_SUN_JNDI_LDAP_LDAPCTXFACTORY =
-			"com.sun.jndi.ldap.LdapCtxFactory";
+	public static final String COM_SUN_JNDI_LDAP_LDAPCTXFACTORY = "com.sun.jndi.ldap.LdapCtxFactory";
 	public static final String JAVA_NAMING_LDAP_FACTORY_SOCKET = "java.naming.ldap.factory.socket";
 	public static final String ORG_WSO2_CARBON_CONNECTOR_SECURITY_MYSSLSOCKETFACTORY =
 			"org.wso2.carbon.connector.security.MySSLSocketFactory";

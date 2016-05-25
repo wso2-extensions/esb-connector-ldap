@@ -39,8 +39,7 @@ public class DeleteEntry extends AbstractConnector {
 		String dn = (String) getParameter(messageContext, LDAPConstants.DN);
 
 		OMFactory factory = OMAbstractFactory.getOMFactory();
-		OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE,
-		                                           LDAPConstants.NAMESPACE);
+		OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE, LDAPConstants.NAMESPACE);
 		OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
 		OMElement message = factory.createOMElement(LDAPConstants.MESSAGE, ns);
 
@@ -53,8 +52,7 @@ public class DeleteEntry extends AbstractConnector {
 				Attributes matchingAttributes = new BasicAttributes();
 				//search for the existance of dn
 				matchingAttributes.put(new BasicAttribute(LDAPConstants.DN));
-				NamingEnumeration<SearchResult> searchResult =
-						context.search(dn, matchingAttributes);
+				NamingEnumeration<SearchResult> searchResult = context.search(dn, matchingAttributes);
 				try {
 					context.destroySubcontext(dn);
 					message.setText(LDAPConstants.SUCCESS);
@@ -62,20 +60,16 @@ public class DeleteEntry extends AbstractConnector {
 					LDAPUtils.preparePayload(messageContext, result);
 				} catch (NamingException e) {
 					log.error("Failed to delete ldap entry with dn = " + dn, e);
-					LDAPUtils.handleErrorResponse(messageContext,
-					                              LDAPConstants.ErrorConstants.DELETE_ENTRY_ERROR,
-					                              e);
+					LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.DELETE_ENTRY_ERROR, e);
 					throw new SynapseException(e);
 				}
 			} catch (NamingException e) {
-				LDAPUtils.handleErrorResponse(messageContext,
-				                              LDAPConstants.ErrorConstants.ENTRY_DOESNOT_EXISTS_ERROR,
+				LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.ENTRY_DOESNOT_EXISTS_ERROR,
 				                              e);
 				throw new SynapseException(e);
 			}
 		} catch (NamingException e) {
-			LDAPUtils.handleErrorResponse(messageContext,
-			                              LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
+			LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
 			throw new SynapseException(e);
 		}
 	}
