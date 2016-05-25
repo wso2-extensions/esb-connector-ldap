@@ -37,16 +37,18 @@ public class Authenticate extends AbstractConnector {
 
 	@Override
 	public void connect(MessageContext messageContext) throws ConnectException {
-		String providerUrl = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.PROVIDER_URL);
+		String providerUrl =
+				LDAPUtils.lookupContextParams(messageContext, LDAPConstants.PROVIDER_URL);
 		String dn = (String) getParameter(messageContext, LDAPConstants.DN);
 		String password = (String) getParameter(messageContext, LDAPConstants.PASSWORD);
-		boolean secureConnection =
-				Boolean.valueOf(LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURE_CONNECTION));
-		boolean disableSSLCertificateChecking =
-				Boolean.valueOf(LDAPUtils.lookupContextParams(messageContext, LDAPConstants.DISABLE_SSL_CERT_CHECKING));
+		boolean secureConnection = Boolean.valueOf(
+				LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURE_CONNECTION));
+		boolean disableSSLCertificateChecking = Boolean.valueOf(LDAPUtils.lookupContextParams(
+				messageContext, LDAPConstants.DISABLE_SSL_CERT_CHECKING));
 
 		OMFactory factory = OMAbstractFactory.getOMFactory();
-		OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE, LDAPConstants.NAMESPACE);
+		OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE,
+		                                           LDAPConstants.NAMESPACE);
 		OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
 		OMElement message = factory.createOMElement(LDAPConstants.MESSAGE, ns);
 

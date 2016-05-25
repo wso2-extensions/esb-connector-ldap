@@ -41,16 +41,21 @@ import org.apache.synapse.transport.nhttp.NhttpConstants;
 public class LDAPUtils {
 	private static final OMFactory fac = OMAbstractFactory.getOMFactory();
 	protected static Log log = LogFactory.getLog(LDAPUtils.class);
-	private static OMNamespace ns = fac.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE, LDAPConstants.NAMESPACE);
+	private static OMNamespace ns =
+			fac.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE, LDAPConstants.NAMESPACE);
 
-	protected static DirContext getDirectoryContext(MessageContext messageContext) throws NamingException {
-		String providerUrl = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.PROVIDER_URL);
-		String securityPrincipal = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURITY_PRINCIPAL);
-		String securityCredentials = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURITY_CREDENTIALS);
-		boolean secureConnection =
-				Boolean.valueOf(LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURE_CONNECTION));
-		boolean disableSSLCertificateChecking =
-				Boolean.valueOf(LDAPUtils.lookupContextParams(messageContext, LDAPConstants.DISABLE_SSL_CERT_CHECKING));
+	protected static DirContext getDirectoryContext(MessageContext messageContext)
+			throws NamingException {
+		String providerUrl =
+				LDAPUtils.lookupContextParams(messageContext, LDAPConstants.PROVIDER_URL);
+		String securityPrincipal =
+				LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURITY_PRINCIPAL);
+		String securityCredentials =
+				LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURITY_CREDENTIALS);
+		boolean secureConnection = Boolean.valueOf(
+				LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURE_CONNECTION));
+		boolean disableSSLCertificateChecking = Boolean.valueOf(LDAPUtils.lookupContextParams(
+				messageContext, LDAPConstants.DISABLE_SSL_CERT_CHECKING));
 
 		Hashtable env = new Hashtable();
 		env.put(Context.INITIAL_CONTEXT_FACTORY, LDAPConstants.COM_SUN_JNDI_LDAP_LDAPCTXFACTORY);
@@ -72,7 +77,8 @@ public class LDAPUtils {
 		return (String) ctxt.getProperty(paramName);
 	}
 
-	public static void storeAdminLoginDatails(MessageContext ctxt, String url, String principal, String password) {
+	public static void storeAdminLoginDatails(MessageContext ctxt, String url, String principal,
+	                                          String password) {
 		ctxt.setProperty(LDAPConstants.PROVIDER_URL, url);
 		ctxt.setProperty(LDAPConstants.SECURITY_PRINCIPAL, principal);
 		ctxt.setProperty(LDAPConstants.SECURITY_CREDENTIALS, password);
@@ -98,7 +104,8 @@ public class LDAPUtils {
 		preparePayload(messageContext, omElement);
 	}
 
-	public static void handleErrorResponse(MessageContext messageContext, int errorCode, Exception e) {
+	public static void handleErrorResponse(MessageContext messageContext, int errorCode,
+	                                       Exception e) {
 		org.apache.axis2.context.MessageContext axis2MessageContext =
 				((Axis2MessageContext) messageContext).getAxis2MessageContext();
 		String errorMessage = e.getMessage();

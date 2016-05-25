@@ -45,12 +45,14 @@ public class SearchEntry extends AbstractConnector {
 		String objectClass = (String) getParameter(messageContext, LDAPConstants.OBJECT_CLASS);
 		String filter = (String) getParameter(messageContext, LDAPConstants.FILTERS);
 		String dn = (String) getParameter(messageContext, LDAPConstants.DN);
-		String returnAttributes[] = ((String) getParameter(messageContext, LDAPConstants.ATTRIBUTES)).split(",");
-		boolean onlyOneReference =
-				Boolean.valueOf((String) getParameter(messageContext, LDAPConstants.ONLY_ONE_REFERENCE));
+		String returnAttributes[] =
+				((String) getParameter(messageContext, LDAPConstants.ATTRIBUTES)).split(",");
+		boolean onlyOneReference = Boolean.valueOf(
+				(String) getParameter(messageContext, LDAPConstants.ONLY_ONE_REFERENCE));
 
 		OMFactory factory = OMAbstractFactory.getOMFactory();
-		OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE, LDAPConstants.NAMESPACE);
+		OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE,
+		                                           LDAPConstants.NAMESPACE);
 		OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
 
 		try {
@@ -60,21 +62,24 @@ public class SearchEntry extends AbstractConnector {
 			String searchFilter = generateSearchFilter(objectClass, attrFilter);
 			NamingEnumeration<SearchResult> results = null;
 			try {
-				results = searchInUserBase(dn, searchFilter, returnAttributes, SearchControls.SUBTREE_SCOPE, context);
+				results = searchInUserBase(dn, searchFilter, returnAttributes,
+				                           SearchControls.SUBTREE_SCOPE, context);
 				SearchResult entityResult = null;
 
 				if (!onlyOneReference) {
 					if (results != null && results.hasMore()) {
 						while (results.hasMore()) {
 							entityResult = results.next();
-							result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
+							result.addChild(
+									prepareNode(entityResult, factory, ns, returnAttributes));
 						}
 					}
 				} else {
 					entityResult = makeSureOnlyOneMatch(results);
 					if (entityResult == null)
-						throw new NamingException("Multiple objects for the searched target have been found. Try to " +
-						                          "change onlyOneReference option");
+						throw new NamingException(
+								"Multiple objects for the searched target have been found. Try to " +
+								"change onlyOneReference option");
 					result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
 				}
 
@@ -85,12 +90,14 @@ public class SearchEntry extends AbstractConnector {
 				}
 
 			} catch (NamingException e) { //LDAP Errors are catched
-				LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.SEARCH_ERROR, e);
+				LDAPUtils.handleErrorResponse(messageContext,
+				                              LDAPConstants.ErrorConstants.SEARCH_ERROR, e);
 				throw new SynapseException(e);
 			}
 
 		} catch (NamingException e) { //Authentication failures are catched
-			LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
+			LDAPUtils.handleErrorResponse(messageContext,
+			                              LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
 			throw new SynapseException(e);
 		}
 	}
@@ -136,8 +143,10 @@ public class SearchEntry extends AbstractConnector {
 	}
 
 	private NamingEnumeration<SearchResult> searchInUserBase(String dn, String searchFilter,
-	                                                         String[] returningAttributes, int searchScope,
-	                                                         DirContext rootContext) throws NamingException {
+	                                                         String[] returningAttributes,
+	                                                         int searchScope,
+	                                                         DirContext rootContext)
+			throws NamingException {
 		String userBase = dn;
 		SearchControls userSearchControl = new SearchControls();
 		userSearchControl.setReturningAttributes(returningAttributes);
