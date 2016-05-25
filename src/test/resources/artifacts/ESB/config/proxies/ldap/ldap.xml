@@ -30,17 +30,27 @@
                         <case regex="createEntity">
                             <property name="NO_ENTITY_BODY" scope="axis2" action="remove"/>
                             <property name="messageType" value="application/json" scope="axis2"/>
-                            <property name="objectClass" expression="json-eval($.content.objectClass)"/>
+                            <property name="objectClass"
+                                      expression="json-eval($.content.objectClass)"/>
                             <property name="dn" expression="json-eval($.content.dn)"/>
-                            <property name="attributes" expression="json-eval($.content.attributes)"/>
+                            <property name="attributes"
+                                      expression="json-eval($.content.attributes)"/>
                             <property name="providerUrl" expression="json-eval($.providerUrl)"/>
-                            <property name="securityPrincipal" expression="json-eval($.securityPrincipal)"/>
-                            <property name="securityCredentials" expression="json-eval($.securityCredentials)"/>
+                            <property name="securityPrincipal"
+                                      expression="json-eval($.securityPrincipal)"/>
+                            <property name="securityCredentials"
+                                      expression="json-eval($.securityCredentials)"/>
+                            <property name="secureConnection"
+                                      expression="json-eval($.secureConnection)"/>
+                            <property name="disableSSLCertificateChecking"
+                                      expression="json-eval($.disableSSLCertificateChecking)"/>
                             <log level="full"/>
                             <ldap.init>
                                 <providerUrl>{get-property('providerUrl')}</providerUrl>
                                 <securityPrincipal>{get-property('securityPrincipal')}</securityPrincipal>
                                 <securityCredentials>{get-property('securityCredentials')}</securityCredentials>
+                                <secureConnection>{get-property('secureConnection')}</secureConnection>
+                                <disableSSLCertificateChecking>{get-property('disableSSLCertificateChecking')}</disableSSLCertificateChecking>
                             </ldap.init>
                             <ldap.addEntry>
                                 <objectClass>{get-property('objectClass')}</objectClass>
@@ -54,13 +64,21 @@
                             <property name="messageType" value="application/json" scope="axis2"/>
                             <property name="dn" expression="json-eval($.content.dn)"/>
                             <property name="providerUrl" expression="json-eval($.providerUrl)"/>
-                            <property name="securityPrincipal" expression="json-eval($.securityPrincipal)"/>
-                            <property name="securityCredentials" expression="json-eval($.securityCredentials)"/>
+                            <property name="securityPrincipal"
+                                      expression="json-eval($.securityPrincipal)"/>
+                            <property name="securityCredentials"
+                                      expression="json-eval($.securityCredentials)"/>
+                            <property name="secureConnection"
+                                      expression="json-eval($.secureConnection)"/>
+                            <property name="disableSSLCertificateChecking"
+                                      expression="json-eval($.disableSSLCertificateChecking)"/>
                             <log level="full"/>
                             <ldap.init>
                                 <providerUrl>{get-property('providerUrl')}</providerUrl>
                                 <securityPrincipal>{get-property('securityPrincipal')}</securityPrincipal>
                                 <securityCredentials>{get-property('securityCredentials')}</securityCredentials>
+                                <secureConnection>{get-property('secureConnection')}</secureConnection>
+                                <disableSSLCertificateChecking>{get-property('disableSSLCertificateChecking')}</disableSSLCertificateChecking>
                             </ldap.init>
                             <ldap.deleteEntry>
                                 <dn>{get-property('dn')}</dn>
@@ -70,18 +88,28 @@
                         <case regex="searchEntity">
                             <property name="NO_ENTITY_BODY" scope="axis2" action="remove"/>
                             <property name="messageType" value="application/json" scope="axis2"/>
-                            <property name="objectClass" expression="json-eval($.content.objectClass)"/>
+                            <property name="objectClass"
+                                      expression="json-eval($.content.objectClass)"/>
                             <property name="dn" expression="json-eval($.content.dn)"/>
-                            <property name="attributes" expression="json-eval($.content.attributes)"/>
+                            <property name="attributes"
+                                      expression="json-eval($.content.attributes)"/>
                             <property name="filters" expression="json-eval($.content.filters)"/>
                             <property name="providerUrl" expression="json-eval($.providerUrl)"/>
-                            <property name="securityPrincipal" expression="json-eval($.securityPrincipal)"/>
-                            <property name="securityCredentials" expression="json-eval($.securityCredentials)"/>
+                            <property name="securityPrincipal"
+                                      expression="json-eval($.securityPrincipal)"/>
+                            <property name="securityCredentials"
+                                      expression="json-eval($.securityCredentials)"/>
+                            <property name="secureConnection"
+                                      expression="json-eval($.secureConnection)"/>
+                            <property name="disableSSLCertificateChecking"
+                                      expression="json-eval($.disableSSLCertificateChecking)"/>
                             <log level="full"/>
                             <ldap.init>
                                 <providerUrl>{get-property('providerUrl')}</providerUrl>
                                 <securityPrincipal>{get-property('securityPrincipal')}</securityPrincipal>
                                 <securityCredentials>{get-property('securityCredentials')}</securityCredentials>
+                                <secureConnection>{get-property('secureConnection')}</secureConnection>
+                                <disableSSLCertificateChecking>{get-property('disableSSLCertificateChecking')}</disableSSLCertificateChecking>
                             </ldap.init>
                             <ldap.searchEntry>
                                 <objectClass>{get-property('objectClass')}</objectClass>
@@ -96,15 +124,24 @@
                             <property name="messageType" value="application/json" scope="axis2"/>
                             <property name="mode" expression="json-eval($.content.mode)"/>
                             <property name="dn" expression="json-eval($.content.dn)"/>
-                            <property name="attributes" expression="json-eval($.content.attributes)"/>
+                            <property name="attributes"
+                                      expression="json-eval($.content.attributes)"/>
                             <property name="providerUrl" expression="json-eval($.providerUrl)"/>
-                            <property name="securityPrincipal" expression="json-eval($.securityPrincipal)"/>
-                            <property name="securityCredentials" expression="json-eval($.securityCredentials)"/>
+                            <property name="securityPrincipal"
+                                      expression="json-eval($.securityPrincipal)"/>
+                            <property name="securityCredentials"
+                                      expression="json-eval($.securityCredentials)"/>
+                            <property name="secureConnection"
+                                      expression="json-eval($.secureConnection)"/>
+                            <property name="disableSSLCertificateChecking"
+                                      expression="json-eval($.disableSSLCertificateChecking)"/>
                             <log level="full"/>
                             <ldap.init>
                                 <providerUrl>{get-property('providerUrl')}</providerUrl>
                                 <securityPrincipal>{get-property('securityPrincipal')}</securityPrincipal>
                                 <securityCredentials>{get-property('securityCredentials')}</securityCredentials>
+                                <secureConnection>{get-property('secureConnection')}</secureConnection>
+                                <disableSSLCertificateChecking>{get-property('disableSSLCertificateChecking')}</disableSSLCertificateChecking>
                             </ldap.init>
                             <ldap.updateEntry>
                                 <mode>{get-property('mode')}</mode>
@@ -119,13 +156,21 @@
                             <property name="dn" expression="json-eval($.content.dn)"/>
                             <property name="password" expression="json-eval($.content.password)"/>
                             <property name="providerUrl" expression="json-eval($.providerUrl)"/>
-                            <property name="securityPrincipal" expression="json-eval($.securityPrincipal)"/>
-                            <property name="securityCredentials" expression="json-eval($.securityCredentials)"/>
+                            <property name="securityPrincipal"
+                                      expression="json-eval($.securityPrincipal)"/>
+                            <property name="securityCredentials"
+                                      expression="json-eval($.securityCredentials)"/>
+                            <property name="secureConnection"
+                                      expression="json-eval($.secureConnection)"/>
+                            <property name="disableSSLCertificateChecking"
+                                      expression="json-eval($.disableSSLCertificateChecking)"/>
                             <log level="full"/>
                             <ldap.init>
                                 <providerUrl>{get-property('providerUrl')}</providerUrl>
                                 <securityPrincipal>{get-property('securityPrincipal')}</securityPrincipal>
                                 <securityCredentials>{get-property('securityCredentials')}</securityCredentials>
+                                <secureConnection>{get-property('secureConnection')}</secureConnection>
+                                <disableSSLCertificateChecking>{get-property('disableSSLCertificateChecking')}</disableSSLCertificateChecking>
                             </ldap.init>
                             <ldap.authenticate>
                                 <dn>{get-property('dn')}</dn>

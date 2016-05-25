@@ -20,19 +20,44 @@ package org.wso2.carbon.connector.ldap;
 
 public class LDAPConstants {
 	public static final String SECURE_CONNECTION = "secureConnection";
-	public static final String DISABLE_SSL_CERT_CHECKING = "disableSSLCertificateChecking";	
-    public static final String PROVIDER_URL = "providerUrl";
-    public static final String SECURITY_PRINCIPAL = "securityPrincipal";
-    public static final String SECURITY_CREDENTIALS = "securityCredentials";
-    public static final String CONNECTOR_NAMESPACE = "http://org.wso2.esbconnectors.ldap";
+	public static final String DISABLE_SSL_CERT_CHECKING = "disableSSLCertificateChecking";
+	public static final String PROVIDER_URL = "providerUrl";
+	public static final String SECURITY_PRINCIPAL = "securityPrincipal";
+	public static final String SECURITY_CREDENTIALS = "securityCredentials";
+	public static final String CONNECTOR_NAMESPACE = "http://org.wso2.esbconnectors.ldap";
+	public static final String OBJECT_CLASS = "objectClass";
+	public static final String ATTRIBUTES = "attributes";
+	public static final String DN = "dn";
+	public static final String RESULT = "result";
+	public static final String MESSAGE = "message";
+	public static final String SUCCESS = "Success";
+	public static final String PASSWORD = "password";
+	public static final String FAIL = "Fail";
+	public static final String SSL = "ssl";
+	public static final String NAMESPACE = "ns";
+	public static final String ERROR = "error";
+	public static final String ERROR_MESSAGE = "errorMessage";
+	public static final String ERROR_CODE = "errorCode";
+	public static final String ONLY_ONE_REFERENCE = "onlyOneReference";
+	public static final String FILTERS = "filters";
+	public static final String ENTRY = "entry";
+	public static final String MODE = "mode";
+	public static final String REPLACE = "replace";
+	public static final String ADD = "add";
+	public static final String REMOVE = "remove";
+	public static final String COM_SUN_JNDI_LDAP_LDAPCTXFACTORY =
+			"com.sun.jndi.ldap.LdapCtxFactory";
+	public static final String JAVA_NAMING_LDAP_FACTORY_SOCKET = "java.naming.ldap.factory.socket";
+	public static final String ORG_WSO2_CARBON_CONNECTOR_SECURITY_MYSSLSOCKETFACTORY =
+			"org.wso2.carbon.connector.security.MySSLSocketFactory";
 
-    public static final class ErrorConstants {
-        public static final int SEARCH_ERROR = 7000001;
-        public static final int INVALID_LDAP_CREDENTIALS = 7000002;
-        public static final int ADD_ENTRY_ERROR = 7000003;
-        public static final int UPDATE_ENTRY_ERROR = 7000004;
-        public static final int DELETE_ENTRY_ERROR = 7000005;
-        public static final int ENTRY_DOESNOT_EXISTS_ERROR = 7000006;
+	public static final class ErrorConstants {
+		public static final int SEARCH_ERROR = 7000001;
+		public static final int INVALID_LDAP_CREDENTIALS = 7000002;
+		public static final int ADD_ENTRY_ERROR = 7000003;
+		public static final int UPDATE_ENTRY_ERROR = 7000004;
+		public static final int DELETE_ENTRY_ERROR = 7000005;
+		public static final int ENTRY_DOESNOT_EXISTS_ERROR = 7000006;
 
-    }
+	}
 }

@@ -17,9 +17,10 @@
 ~  under the License.
 -->
 <template name="deleteEntry" xmlns="http://ws.apache.org/ns/synapse">
-  <parameter name="dn"/>
-  <sequence>
-    <property expression="$func:dn" name="dn" scope="default" type="STRING"/>
-    <class name="org.wso2.carbon.connector.ldap.DeleteEntry"/>
-  </sequence>
+    <parameter name="dn" description="The distinguished name of the entry you need to delete."/>
+    <sequence>
+        <property expression="$func:dn" name="dn" scope="default" type="STRING"/>
+
+        <class name="org.wso2.carbon.connector.ldap.DeleteEntry"/>
+    </sequence>
 </template>

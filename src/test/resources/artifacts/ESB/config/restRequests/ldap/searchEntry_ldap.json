@@ -1,13 +1,15 @@
 {
-    "providerUrl":"%s(providerUrl)",
-    "securityPrincipal":"%s(securityPrincipal)",
-    "securityCredentials":"%s(securityCredentials)",
-    "application":"ldap",
-    "operation":"searchEntity",
-    "content":{
-        "dn":"%s(ldapUserBase)",
-        "objectClass":"inetOrgPerson",
-        "attributes":"mail,uid,givenName",
-        "filters":"uid=%s(testUserId)"
-    }
+  "providerUrl": "%s(providerUrl)",
+  "securityPrincipal": "%s(securityPrincipal)",
+  "securityCredentials": "%s(securityCredentials)",
+  "secureConnection": "%s(secureConnection)",
+  "disableSSLCertificateChecking": "%s(disableSSLCertificateChecking)",
+  "application": "ldap",
+  "operation": "searchEntity",
+  "content": {
+    "dn": "%s(ldapUserBase)",
+    "objectClass": "inetOrgPerson",
+    "attributes": "mail,uid,givenName",
+    "filters": "uid=%s(testUserId)"
+  }
 }

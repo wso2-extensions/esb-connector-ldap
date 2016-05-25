@@ -23,6 +23,8 @@ Tested Platform:
 	providerUrl - URL of you LDAP server
 	securityPrincipal - Root user DN
 	securityCredentials - Root user password
+	secureConnection - Boolean value for the secure connection
+	disableSSLCertificateChecking - Boolean value to whether check certificate or not
 	ldapUserBase - User Base of the LDAP server
 	testUserId - Sample test user id
 	baseDN - Base DN of the LDAP server

@@ -32,62 +32,61 @@ import org.apache.axiom.om.OMNamespace;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
-import org.apache.synapse.transport.nhttp.NhttpConstants;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
 
 public class UpdateEntry extends AbstractConnector {
-    public static final String ATTRIBUTES = "attributes";
-    public static final String DN = "dn";
-    public static final String MODE = "mode";
 
-    @Override
-    public void connect(MessageContext messageContext) throws ConnectException {
-        String attributesString = (String) getParameter(messageContext, ATTRIBUTES);
-        String dn = (String) getParameter(messageContext, DN);
-        String mode = (String) getParameter(messageContext, MODE);
+	@Override
+	public void connect(MessageContext messageContext) throws ConnectException {
+		String attributesString = (String) getParameter(messageContext, LDAPConstants.ATTRIBUTES);
+		String dn = (String) getParameter(messageContext, LDAPConstants.DN);
+		String mode = (String) getParameter(messageContext, LDAPConstants.MODE);
 
-        OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE, "ns");
-        OMElement result = factory.createOMElement("result", ns);
-        OMElement message = factory.createOMElement("message", ns);
+		OMFactory factory = OMAbstractFactory.getOMFactory();
+		OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE,
+		                                           LDAPConstants.NAMESPACE);
+		OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
+		OMElement message = factory.createOMElement(LDAPConstants.MESSAGE, ns);
 
-        org.apache.axis2.context.MessageContext axis2MessageContext = ((Axis2MessageContext) messageContext).getAxis2MessageContext();
+		org.apache.axis2.context.MessageContext axis2MessageContext =
+				((Axis2MessageContext) messageContext).getAxis2MessageContext();
 
-        try {
-            DirContext context = LDAPUtils.getDirectoryContext(messageContext);
+		try {
+			DirContext context = LDAPUtils.getDirectoryContext(messageContext);
 
-            Attributes entry = new BasicAttributes();
+			Attributes entry = new BasicAttributes();
 
-            if (attributesString != null) {
-                String attrSet[] = attributesString.split(","); //name:dimuthu
-                for (int i = 0; i < attrSet.length; i++) {
-                    String keyVals[] = attrSet[i].split("=");
-                    Attribute newAttr = new BasicAttribute(keyVals[0]);
-                    newAttr.add(keyVals[1]);
-                    entry.put(newAttr);
-                }
-            }
+			if (attributesString != null) {
+				String attrSet[] = attributesString.split(",");
+				for (int i = 0; i < attrSet.length; i++) {
+					String keyVals[] = attrSet[i].split("=");
+					Attribute newAttr = new BasicAttribute(keyVals[0]);
+					newAttr.add(keyVals[1]);
+					entry.put(newAttr);
+				}
+			}
 
-            try {
-                if (mode.equals("replace")) {
-                    context.modifyAttributes(dn, DirContext.REPLACE_ATTRIBUTE, entry);
-                } else if (mode.equals("add")) {
-                    context.modifyAttributes(dn, DirContext.ADD_ATTRIBUTE, entry);
-                } else if (mode.equals("remove")) {
-                    context.modifyAttributes(dn, DirContext.REMOVE_ATTRIBUTE, entry);
-                }
-                message.setText("Success");
-                result.addChild(message);
-                LDAPUtils.preparePayload(messageContext, result);
-            } catch (NamingException e) { // LDAP Errors are catched
-                LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.UPDATE_ENTRY_ERROR, e);
-                throw new SynapseException(e);
-            }
-        } catch (NamingException e) { //Authentication failures are catched
-            LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
-            throw new SynapseException(e);
-        }
-    }
-
+			try {
+				if (mode.equals(LDAPConstants.REPLACE)) {
+					context.modifyAttributes(dn, DirContext.REPLACE_ATTRIBUTE, entry);
+				} else if (mode.equals(LDAPConstants.ADD)) {
+					context.modifyAttributes(dn, DirContext.ADD_ATTRIBUTE, entry);
+				} else if (mode.equals(LDAPConstants.REMOVE)) {
+					context.modifyAttributes(dn, DirContext.REMOVE_ATTRIBUTE, entry);
+				}
+				message.setText(LDAPConstants.SUCCESS);
+				result.addChild(message);
+				LDAPUtils.preparePayload(messageContext, result);
+			} catch (NamingException e) { // LDAP Errors are catched
+				LDAPUtils.handleErrorResponse(messageContext,
+				                              LDAPConstants.ErrorConstants.UPDATE_ENTRY_ERROR, e);
+				throw new SynapseException(e);
+			}
+		} catch (NamingException e) { //Authentication failures are catched
+			LDAPUtils.handleErrorResponse(messageContext,
+			                              LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
+			throw new SynapseException(e);
+		}
+	}
 }

@@ -1,10 +1,12 @@
 {
-    "providerUrl":"%s(providerUrl)",
-    "securityPrincipal":"%s(securityPrincipal)",
-    "securityCredentials":"%s(securityCredentials)",
-    "application": "ldap",
-    "operation":"deleteEntity",
-    "content":{
-        "dn":"uid=%s(testUserId),%s(ldapUserBase)"
-    }
+  "providerUrl": "%s(providerUrl)",
+  "securityPrincipal": "%s(securityPrincipal)",
+  "securityCredentials": "%s(securityCredentials)",
+  "secureConnection": "%s(secureConnection)",
+  "disableSSLCertificateChecking": "%s(disableSSLCertificateChecking)",
+  "application": "ldap",
+  "operation": "deleteEntity",
+  "content": {
+    "dn": "uid=%s(testUserId),%s(ldapUserBase)"
+  }
 }
