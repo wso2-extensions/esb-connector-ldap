@@ -32,63 +32,61 @@ import org.apache.axiom.om.OMNamespace;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
-import org.apache.synapse.transport.nhttp.NhttpConstants;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
 
 public class AddEntry extends AbstractConnector {
-    public static final String OBJECT_CLASS = "objectClass";
-    public static final String ATTRIBUTES = "attributes";
-    public static final String DN = "dn";
 
-    @Override
-    public void connect(MessageContext messageContext) throws ConnectException {
-        String objectClass = (String) getParameter(messageContext, OBJECT_CLASS);
-        String attributesString = (String) getParameter(messageContext, ATTRIBUTES);
-        String dn = (String) getParameter(messageContext, DN);
+	@Override
+	public void connect(MessageContext messageContext) throws ConnectException {
+		String objectClass = (String) getParameter(messageContext, LDAPConstants.OBJECT_CLASS);
+		String attributesString = (String) getParameter(messageContext, LDAPConstants.ATTRIBUTES);
+		String dn = (String) getParameter(messageContext, LDAPConstants.DN);
 
-        OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE, "ns");
-        OMElement result = factory.createOMElement("result", ns);
-        OMElement message = factory.createOMElement("message", ns);
+		OMFactory factory = OMAbstractFactory.getOMFactory();
+		OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE,
+		                                           LDAPConstants.NAMESPACE);
+		OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
+		OMElement message = factory.createOMElement(LDAPConstants.MESSAGE, ns);
 
-        org.apache.axis2.context.MessageContext axis2MessageContext = ((Axis2MessageContext) messageContext).getAxis2MessageContext();
+		org.apache.axis2.context.MessageContext axis2MessageContext =
+				((Axis2MessageContext) messageContext).getAxis2MessageContext();
 
-        try {
+		try {
 
-            DirContext context = LDAPUtils.getDirectoryContext(messageContext);
+			DirContext context = LDAPUtils.getDirectoryContext(messageContext);
 
-            String classes[] = objectClass.split(",");
-            Attributes entry = new BasicAttributes();
-            Attribute obClassAttr = new BasicAttribute("objectClass");
-            for (int i = 0; i < classes.length; i++) {
-                obClassAttr.add(classes[i]);
-            }
-            entry.put(obClassAttr);
-            if (attributesString != null) {
-                String attrSet[] = attributesString.split(",");
-                for (int i = 0; i < attrSet.length; i++) {
-                    String keyVals[] = attrSet[i].split("=");
-                    Attribute newAttr = new BasicAttribute(keyVals[0]);
-                    newAttr.add(keyVals[1]);
-                    entry.put(newAttr);
-                }
-            }
-            try {
-                context.createSubcontext(dn, entry);
-                message.setText("Success");
-                result.addChild(message);
-                LDAPUtils.preparePayload(messageContext, result);
-            } catch (NamingException e) {
-                log.error("Failed to create ldap entry with dn = " + dn, e);
-                LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.ADD_ENTRY_ERROR, e);
-                throw new SynapseException(e);
-            }
-        } catch (NamingException e) {
-            LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
-            throw new SynapseException(e);
-        }
-    }
-
-
+			String classes[] = objectClass.split(",");
+			Attributes entry = new BasicAttributes();
+			Attribute obClassAttr = new BasicAttribute(LDAPConstants.OBJECT_CLASS);
+			for (int i = 0; i < classes.length; i++) {
+				obClassAttr.add(classes[i]);
+			}
+			entry.put(obClassAttr);
+			if (attributesString != null) {
+				String attrSet[] = attributesString.split(",");
+				for (int i = 0; i < attrSet.length; i++) {
+					String keyVals[] = attrSet[i].split("=");
+					Attribute newAttr = new BasicAttribute(keyVals[0]);
+					newAttr.add(keyVals[1]);
+					entry.put(newAttr);
+				}
+			}
+			try {
+				context.createSubcontext(dn, entry);
+				message.setText(LDAPConstants.SUCCESS);
+				result.addChild(message);
+				LDAPUtils.preparePayload(messageContext, result);
+			} catch (NamingException e) {
+				log.error("Failed to create ldap entry with dn = " + dn, e);
+				LDAPUtils.handleErrorResponse(messageContext,
+				                              LDAPConstants.ErrorConstants.ADD_ENTRY_ERROR, e);
+				throw new SynapseException(e);
+			}
+		} catch (NamingException e) {
+			LDAPUtils.handleErrorResponse(messageContext,
+			                              LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
+			throw new SynapseException(e);
+		}
+	}
 }

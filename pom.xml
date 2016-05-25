@@ -17,7 +17,9 @@
  ~  under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.connector</groupId>
     <artifactId>org.wso2.carbon.connector.ldap</artifactId>
@@ -144,10 +146,11 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-     <scm>
+    <scm>
         <connection>scm:git:https://github.com/wso2-extensions/esb-connector-ldap.git</connection>
         <url>https://github.com/wso2-extensions/esb-connector-ldap.git</url>
-        <developerConnection>scm:git:https://github.com/wso2-extensions/esb-connector-ldap</developerConnection>
+        <developerConnection>scm:git:https://github.com/wso2-extensions/esb-connector-ldap
+        </developerConnection>
         <tag>HEAD</tag>
     </scm>
     <build>
@@ -203,7 +206,8 @@
                                 <filter>${basedir}/src/main/assembly/filter.properties</filter>
                             </filters>
                             <descriptors>
-                                <descriptor>${basedir}/src/main/assembly/assemble-connector.xml</descriptor>
+                                <descriptor>${basedir}/src/main/assembly/assemble-connector.xml
+                                </descriptor>
                             </descriptors>
                         </configuration>
                     </execution>

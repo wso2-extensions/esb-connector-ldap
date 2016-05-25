@@ -17,15 +17,16 @@
 ~  under the License.
 -->
 <template name="addEntry" xmlns="http://ws.apache.org/ns/synapse">
-  <parameter name="objectClass"/>
-  <parameter name="attributes"/>
-  <parameter name="dn"/>
-  <sequence>
-    <property expression="$func:objectClass" name="objectClass"
-      scope="default" type="STRING"/>
-    <property expression="$func:attributes" name="attributes"
-      scope="default" type="STRING"/>
-    <property expression="$func:dn" name="dn" scope="default" type="STRING"/>
-    <class name="org.wso2.carbon.connector.ldap.AddEntry"/>
-  </sequence>
+    <parameter name="objectClass"
+               description="The object class of the entry you need to add entry."/>
+    <parameter name="attributes" description="The attributes of the LDAP entry that should be
+               included in the add entry result."/>
+    <parameter name="dn" description="The distinguished name of the entry you need to add entry."/>
+    <sequence>
+        <property expression="$func:objectClass" name="objectClass" scope="default" type="STRING"/>
+        <property expression="$func:attributes" name="attributes" scope="default" type="STRING"/>
+        <property expression="$func:dn" name="dn" scope="default" type="STRING"/>
+
+        <class name="org.wso2.carbon.connector.ldap.AddEntry"/>
+    </sequence>
 </template>

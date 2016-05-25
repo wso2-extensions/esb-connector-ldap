@@ -17,14 +17,15 @@
 ~  under the License.
 -->
 <template name="updateEntry" xmlns="http://ws.apache.org/ns/synapse">
-  <parameter name="attributes"/>
-  <parameter name="dn"/>
-  <parameter name="mode"/>
-  <sequence>
-    <property expression="$func:attributes" name="attributes"
-      scope="default" type="STRING"/>
-    <property expression="$func:dn" name="dn" scope="default" type="STRING"/>
-    <property expression="$func:mode" name="mode" scope="default" type="STRING"/>
-    <class name="org.wso2.carbon.connector.ldap.UpdateEntry"/>
-  </sequence>
+    <parameter name="attributes"
+               description="The attributes of the LDAP entry that you need to update."/>
+    <parameter name="dn" description="The distinguished name of the entry you need to update."/>
+    <parameter name="mode" description="The mode of the update operation. Possible values."/>
+    <sequence>
+        <property expression="$func:attributes" name="attributes" scope="default" type="STRING"/>
+        <property expression="$func:dn" name="dn" scope="default" type="STRING"/>
+        <property expression="$func:mode" name="mode" scope="default" type="STRING"/>
+
+        <class name="org.wso2.carbon.connector.ldap.UpdateEntry"/>
+    </sequence>
 </template>

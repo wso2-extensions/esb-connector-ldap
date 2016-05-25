@@ -17,28 +17,24 @@
 ~  under the License.
 -->
 <template name="searchEntry" xmlns="http://ws.apache.org/ns/synapse">
-  <parameter name="onlyOneReference"/>
-  <parameter name="objectClass"/>
-  <parameter name="filters"/>
-  <parameter name="dn"/>
-  <parameter name="attributes"/>
-  <sequence>
-    <property
-      description="Boolean value whether to guarantee or not only one referente"
-      expression="$func:onlyOneReference" name="onlyOneReference"
-      scope="default" type="STRING"/>
-    <property
-      description="The object class of the entry you need to search."
-      expression="$func:objectClass" name="objectClass" scope="default" type="STRING"/>
-    <property
-      description="The keywords to use in the search. The keywords should be specified as comma separated key-value pairs."
-      expression="$func:filters" name="filters" scope="default" type="STRING"/>
-    <property
-      description="The distinguished name of the entry you need to search."
-      expression="$func:dn" name="dn" scope="default" type="STRING"/>
-    <property
-      description="The attributes of the LDAP entry that should be included in the search result."
-      expression="$func:attributes" name="attributes" scope="default" type="STRING"/>
-    <class name="org.wso2.carbon.connector.ldap.SearchEntry"/>
-  </sequence>
+    <parameter name="onlyOneReference"
+               description="Boolean value whether to guarantee or not only one reference."/>
+    <parameter name="objectClass" description="The object class of the entry you need to search."/>
+    <parameter name="filters"
+               description="The keywords to use in the search. The keywords should be specified as
+               comma separated key-value pairs."/>
+    <parameter name="dn" description="The distinguished name of the entry you need to search."/>
+    <parameter name="attributes"
+               description="The attributes of the LDAP entry that should be included in the search
+               result."/>
+    <sequence>
+        <property expression="$func:onlyOneReference" name="onlyOneReference" scope="default"
+                  type="STRING"/>
+        <property expression="$func:objectClass" name="objectClass" scope="default" type="STRING"/>
+        <property expression="$func:filters" name="filters" scope="default" type="STRING"/>
+        <property expression="$func:dn" name="dn" scope="default" type="STRING"/>
+        <property expression="$func:attributes" name="attributes" scope="default" type="STRING"/>
+
+        <class name="org.wso2.carbon.connector.ldap.SearchEntry"/>
+    </sequence>
 </template>
