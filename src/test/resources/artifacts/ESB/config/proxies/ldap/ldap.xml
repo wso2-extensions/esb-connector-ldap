@@ -95,6 +95,7 @@
                                       expression="json-eval($.content.attributes)"/>
                             <property name="filters" expression="json-eval($.content.filters)"/>
                             <property name="providerUrl" expression="json-eval($.providerUrl)"/>
+                            <property name="onlyOneReference" expression="json-eval($.onlyOneReference)"/>
                             <property name="securityPrincipal"
                                       expression="json-eval($.securityPrincipal)"/>
                             <property name="securityCredentials"
@@ -116,6 +117,7 @@
                                 <dn>{get-property('dn')}</dn>
                                 <attributes>{get-property('attributes')}</attributes>
                                 <filters>{get-property('filters')}</filters>
+                                <onlyOneReference>{get-property('onlyOneReference')}</onlyOneReference>
                             </ldap.searchEntry>
                             <respond/>
                         </case>

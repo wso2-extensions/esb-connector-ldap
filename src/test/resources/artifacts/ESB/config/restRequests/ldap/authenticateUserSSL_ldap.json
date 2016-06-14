@@ -1,0 +1,13 @@
+{
+  "providerUrl": "%s(providerSSLUrl)",
+  "securityPrincipal": "cn=admin,dc=example,dc=com",
+  "securityCredentials": "19902",
+  "secureConnection":"true",
+  "disableSSLCertificateChecking":"true",
+  "application": "ldap",
+  "operation": "authenticate",
+  "content": {
+    "dn": "cn=admin,dc=example,dc=com",
+    "password": "19902"
+  }
+}

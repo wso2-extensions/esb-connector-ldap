@@ -62,11 +62,13 @@ public class LDAPUtils {
 		env.put(Context.PROVIDER_URL, providerUrl);
 		env.put(Context.SECURITY_PRINCIPAL, securityPrincipal);
 		env.put(Context.SECURITY_CREDENTIALS, securityCredentials);
-		if (secureConnection)
+		if (secureConnection) {
 			env.put(Context.SECURITY_PROTOCOL, LDAPConstants.SSL);
-		if (disableSSLCertificateChecking)
+		}
+		if (disableSSLCertificateChecking) {
 			env.put(LDAPConstants.JAVA_NAMING_LDAP_FACTORY_SOCKET,
 			        LDAPConstants.ORG_WSO2_CARBON_CONNECTOR_SECURITY_MYSSLSOCKETFACTORY);
+		}
 
 		DirContext ctx = null;
 		ctx = new InitialDirContext(env);
