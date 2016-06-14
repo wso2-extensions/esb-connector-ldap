@@ -18,10 +18,11 @@
 
 package org.wso2.carbon.connector.security;
 
+import org.apache.synapse.SynapseException;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.security.SecureRandom;
 
 import javax.net.SocketFactory;
@@ -38,8 +39,8 @@ public class MySSLSocketFactory extends SSLSocketFactory {
 			ctx.init(null, new TrustManager[] { new DummyTrustmanager() }, new SecureRandom());
 			socketFactory = ctx.getSocketFactory();
 		} catch (Exception ex) {
-			ex.printStackTrace(System.err);
-	        /* handle exception */
+			throw new SynapseException("Error while processing with socketFactory: " +
+			                           ex.getMessage(),ex);
 		}
 	}
 
@@ -64,13 +65,13 @@ public class MySSLSocketFactory extends SSLSocketFactory {
 	}
 
 	@Override
-	public Socket createSocket(String string, int i) throws IOException, UnknownHostException {
+	public Socket createSocket(String string, int i) throws IOException {
 		return socketFactory.createSocket(string, i);
 	}
 
 	@Override
 	public Socket createSocket(String string, int i, InetAddress ia, int i1)
-			throws IOException, UnknownHostException {
+			throws IOException {
 		return socketFactory.createSocket(string, i, ia, i1);
 	}
 

@@ -64,7 +64,6 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 		if (useEmbeddedLDAP) {
 			initializeEmbeddedLDAPServer();
 		}
-
 	}
 
 	private void initializeProperties() {
@@ -113,9 +112,8 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 	}
 
 	//negative test case for logging in to LDAP with invalid credentials
-	@Test(priority = 1, groups = {
-			"wso2.esb" }, description = "ldap {logging in} integration test with invalid " +
-	                                    "credentials.")
+	@Test(priority = 1, groups = { "wso2.esb" }, description =
+			"ldap {logging in} integration test with invalid " + "credentials.")
 	public void testLoggingInWithInValidCredentials() throws Exception {
 		RestResponse<JSONObject> esbRestResponse =
 				sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap,
@@ -125,9 +123,8 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 	}
 
 	//positive test case for creating LDAP entry with valid parameters
-	@Test(priority = 1, groups = {
-			"wso2.esb" }, description = "ldap {createEntry} integration test with mandatory " +
-	                                    "parameters.")
+	@Test(priority = 1, groups = { "wso2.esb" }, description =
+			"ldap {createEntry} integration test with mandatory " + "parameters.")
 	public void testCreateEntryWithValidParameters() throws Exception {
 
 		try {
@@ -145,9 +142,8 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 	}
 
 	//negative test case for creating LDAP entry with missing objectclass
-	@Test(priority = 1, groups = {
-			"wso2.esb" }, description = "ldap {createEntry} integration test with with missing " +
-	                                    "objectclass.")
+	@Test(priority = 1, groups = { "wso2.esb" }, description =
+			"ldap {createEntry} integration test with with missing " + "objectclass.")
 	public void testCreateEntryWithMissingObjectClass() throws Exception {
 
 		RestResponse<JSONObject> esbRestResponse =
@@ -155,7 +151,6 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 				                    "createEntity_ldap_missing_objectclass.json");
 		int statusCode = esbRestResponse.getHttpStatusCode();
 		Assert.assertEquals(statusCode, 500);
-
 	}
 
 	//negative test case for creating LDAP entry with missing dn
@@ -182,9 +177,8 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 	}
 
 	//negative test case for creating LDAP entry with wrong objectclass
-	@Test(priority = 1, groups = {
-			"wso2.esb" }, description = "ldap {createEntry} integration test with wrong " +
-	                                    "objectclass.")
+	@Test(priority = 1, groups = { "wso2.esb" }, description =
+			"ldap {createEntry} integration test with wrong " + "objectclass.")
 	public void testCreateEntryWithWrongObjectClass() throws Exception {
 
 		RestResponse<JSONObject> esbRestResponse =
@@ -195,9 +189,8 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 	}
 
 	//negative test case for creating LDAP entry without mandatory attributes
-	@Test(priority = 1, groups = {
-			"wso2.esb" }, description = "ldap {createEntry} integration test without mandatory " +
-	                                    "attributes.")
+	@Test(priority = 1, groups = { "wso2.esb" }, description =
+			"ldap {createEntry} integration test without mandatory " + "attributes.")
 	public void testCreateEntryWithoutMandatoryAttributes() throws Exception {
 
 		RestResponse<JSONObject> esbRestResponse =
@@ -208,9 +201,8 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 	}
 
 	//positive test case for deleting LDAP entry with valid parameters
-	@Test(priority = 1, groups = {
-			"wso2.esb" }, description = "ldap {deleteEntry} integration test with mandatory" +
-	                                    " parameters.")
+	@Test(priority = 1, groups = { "wso2.esb" }, description =
+			"ldap {deleteEntry} integration test with mandatory" + " parameters.")
 	public void testDeleteEntryWithValidParameters() throws Exception {
 		createSampleEntity();
 
@@ -248,10 +240,9 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 			"wso2.esb" }, description = "ldap {searchEntry} integration test with valid parameters.")
 	public void testSearchEntryWithValidParameters() throws Exception {
 		createSampleEntity();
-
+		testUserId = connectorProperties.getProperty("testUserId");
 		//searching created entry
 		try {
-
 			RestResponse<JSONObject> esbRestResponse =
 					sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap,
 					                    "searchEntry_ldap.json");
@@ -260,7 +251,7 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 			Assert.assertNotNull(result);
 			JSONObject entry = result.getJSONObject("entry");
 			Assert.assertNotNull(entry);
-			Assert.assertEquals(entry.getString("uid"), "testDim20");
+			Assert.assertEquals(entry.getString("uid"), testUserId);
 		} finally {
 			//Finally deleting Entry with correct dn
 			deleteSampleEntry();
@@ -268,9 +259,8 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 	}
 
 	//negative test case for searching LDAP entry with wrong parameters
-	@Test(priority = 1, groups = {
-			"wso2.esb" }, description = "ldap {searchEntry} integration test with wrong " +
-	                                    "parameters.")
+	@Test(priority = 1, groups = { "wso2.esb" }, description =
+			"ldap {searchEntry} integration test with wrong " + "parameters.")
 	public void testSearchEntryWithWrongParameters() throws Exception {
 		createSampleEntity();
 
@@ -329,9 +319,8 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 	}
 
 	//positive test case for success LDAP authentication
-	@Test(priority = 1, groups = {
-			"wso2.esb" }, description = "ldap {authenticateEntry} integration test with valid " +
-	                                    "parameters.")
+	@Test(priority = 1, groups = { "wso2.esb" }, description =
+			"ldap {authenticateEntry} integration test with valid " + "parameters.")
 	public void testSuccessAuthentication() throws Exception {
 
 		createSampleEntity();
@@ -352,9 +341,8 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 	}
 
 	//negative test case for fail LDAP authentication
-	@Test(priority = 1, groups = {
-			"wso2.esb" }, description = "ldap {authenticateEntry} integration test with wrong " +
-	                                    "parameters.")
+	@Test(priority = 1, groups = { "wso2.esb" }, description =
+			"ldap {authenticateEntry} integration test with wrong " + "parameters.")
 	public void testFailAuthentication() throws Exception {
 
 		createSampleEntity();
@@ -372,6 +360,70 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 			//Finally deleting Entry with correct dn
 			deleteSampleEntry();
 		}
+	}
+
+	/*
+	 *Positive test case for LDAP over SSL authentication method with mandatory parameter.
+	 */
+	@Test(priority = 1, groups = { "wso2.esb" }, description =
+			"ldap {authenticateEntry} integration test with valid " + "parameters.")
+	public void testSuccessSSLAuthentication() throws Exception {
+
+		RestResponse<JSONObject> esbRestResponse =
+				sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap,
+				                    "authenticateUserSSL_ldap.json");
+
+		Assert.assertTrue(esbRestResponse.getBody().has("result"));
+		JSONObject result = esbRestResponse.getBody().getJSONObject("result");
+		Assert.assertNotNull(result);
+		Assert.assertEquals(result.getString("message"), "Success");
+	}
+
+	/*
+	 *Negative test case for LDAP over SSL authentication method with mandatory parameter.
+	 */
+	@Test(priority = 1, groups = { "wso2.esb" }, description =
+			"ldap {authenticateEntry} integration test with invalid " + "parameters.")
+	public void testFailSSLAuthentication() throws Exception {
+
+		RestResponse<JSONObject> esbRestResponse =
+				sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap,
+				                    "authenticateUserSSL_ldap_wrong_credentials.json");
+
+		Assert.assertTrue(esbRestResponse.getBody().has("result"));
+		JSONObject result = esbRestResponse.getBody().getJSONObject("result");
+		Assert.assertNotNull(result);
+		Assert.assertEquals(result.getString("message"), "Fail");
+	}
+
+	/**
+	 * Positive test case for LDAP search entry over SSL method with mandatory parameter.
+	 */
+	@Test(priority = 1, groups = { "wso2.esb" }, description =
+			"ldap {searchEntryOverSSL} integration test with mandatory " + "parameters.")
+	public void testSearchEntryOverSSLWithValidParameters() throws Exception {
+
+		RestResponse<JSONObject> esbRestResponse =
+				sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap,
+				                    "searchEntryOverSSL_ldap.json");
+
+		JSONObject result = esbRestResponse.getBody().getJSONObject("result");
+		Assert.assertNotNull(result);
+	}
+
+	/**
+	 * Negative test case for LDAP search entry over SSL.
+	 */
+	@Test(priority = 1, groups = { "wso2.esb" }, description =
+			"ldap {searchEntryOverSSL} integration test with invalid " + "parameters.")
+	public void testSearchEntryOverSSLWithInvalidParameters() throws Exception {
+
+		RestResponse<JSONObject> esbRestResponse =
+				sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap,
+				                    "searchEntryOverSSL_ldap_wrong_params.json");
+
+		JSONObject error = esbRestResponse.getBody().getJSONObject("error");
+		Assert.assertNotNull(error);
 	}
 
 	public void createSampleEntity() throws Exception {
@@ -408,7 +460,6 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 		String dn = "uid=" + testUserId + "," + userBase;
 
 		ctx.createSubcontext(dn, entry);
-
 	}
 
 	public void deleteSampleEntry() throws Exception {

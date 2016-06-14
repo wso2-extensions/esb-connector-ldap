@@ -10,28 +10,47 @@ Pre-requisites:
 Tested Platform: 
 
  - Mac OSX 10.9.2
+ - UBUNTU 14.04
  - WSO2 ESB 4.9.0
  
  STEPS:
 
 1. Make sure the WSO2 ESB 4.9.0 zip file with available at "{LDAP_HOME}/repository/"
 
-2. Integration Tests uses Embedded in-memory LDAP server in tests. So normally connector doesn't need an external LDAP server to run its tests.
+2.Follow the below mentioned steps for adding valid certificate to access LDAP server over SSL.
+
+       	i)   To encrypt the connections, we'll need to configure a certificate authority (https://www.digitalocean.com/community/tutorials/how-to-encrypt-openldap-connections-using-starttls) and use it to sign the keys for the LDAP server.
+       	ii)  Go to new ESB 4.9.0 folder and place the created certificate in both "<ESB_HOME>/repository/resources/security/" and "{LDAP_CONNECTOR_HOME}/src/test/resources/keystores/products/" folders.
+       	iii) Navigate to "<ESB_HOME>/repository/resources/security/" using command prompt and execute keytool -importcert -file CERT_FILE_NAME -keystore client-truststore.jks -alias "CERT_NAME" in command line to import ldap certificate in to keystore.
+       		 Give "wso2carbon" as password. Press "Y" to complete certificate import process.
+
+       		 NOTE : CERT_FILE_NAME is the file name which was created. (e.g. ca_certs.pem)
+       			    CERT_NAME is an arbitrary name for the certificate. (e.g. vive.example.com)
+
+       	iv)  Navigate to "{LDAP_CONNECTOR_HOME}/src/test/resources/keystores/products/" using command prompt and execute keytool -importcert -file CERT_FILE_NAME -keystore wso2carbon.jks -alias "CERT_NAME" in command line to import ldap certificate in to keystore.
+       		 Give "wso2carbon" as password.
+
+       		 NOTE : CERT_FILE_NAME is the file name which was created, change it accordingly. (e.g. ca_certs.pem)
+       			   CERT_NAME is an arbitrary name for the certificate. (e.g. vive.example.com)
+
+3. Integration Tests uses Embedded in-memory LDAP server in tests. So normally connector doesn't need an external LDAP server to run its tests.
     If you want to test the Connector with your LDAP server, do necessary changes to LDAP properties file at location
     "{LDAP_HOME}/src/test/resources/artifacts/ESB/connector/config".
 
-	providerUrl - URL of you LDAP server
-	securityPrincipal - Root user DN
-	securityCredentials - Root user password
-	secureConnection - Boolean value for the secure connection
-	disableSSLCertificateChecking - Boolean value to whether check certificate or not
-	ldapUserBase - User Base of the LDAP server
-	testUserId - Sample test user id
-	baseDN - Base DN of the LDAP server
-	ldapPort - Port which Embedded LDAP server should be started. (Default 10389)
-	useEmbeddedLDAP - Use embedded LDAP server or outside ldap sever. If you want to use your LDAP server to test with the Connector, make this value - false
+		providerUrl - URL of you LDAP server
+    	securityPrincipal - Root user DN
+    	securityCredentials - Root user password
+    	secureConnection - The boolean value for the secure connection.
+    	disableSSLCertificateChecking - The boolean value to check whether certificate enable or not
+    	onlyOneReference - The boolean value whether to guarantee or not only one reference
+    	testUserId- The user ID
+    	ldapUserBase - User Base of the LDAP server
+    	testUserId - Sample test user id
+    	baseDN - Base DN of the LDAP server
+    	ldapPort - Port which Embedded LDAP server should be started. (Default 10389)
+    	useEmbeddedLDAP - Use embedded LDAP server or outside ldap sever. If you want to use your LDAP server to test with the Connector, make this value - false
 
-3. Navigate to "{LDAP_HOME}/" and run the following command.
+4. Navigate to "{LDAP_HOME}/" and run the following command.
       $ mvn clean install
 
 NOTE : 

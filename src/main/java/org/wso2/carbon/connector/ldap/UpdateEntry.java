@@ -31,7 +31,6 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
-import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
 
@@ -48,9 +47,6 @@ public class UpdateEntry extends AbstractConnector {
 		                                           LDAPConstants.NAMESPACE);
 		OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
 		OMElement message = factory.createOMElement(LDAPConstants.MESSAGE, ns);
-
-		org.apache.axis2.context.MessageContext axis2MessageContext =
-				((Axis2MessageContext) messageContext).getAxis2MessageContext();
 
 		try {
 			DirContext context = LDAPUtils.getDirectoryContext(messageContext);
