@@ -37,7 +37,7 @@ Tested Platform:
     If you want to test the Connector with your LDAP server, do necessary changes to LDAP properties file at location
     "{LDAP_HOME}/src/test/resources/artifacts/ESB/connector/config".
 
-		providerUrl - URL of you LDAP server
+	providerUrl - URL of you LDAP server
     	securityPrincipal - Root user DN
     	securityCredentials - Root user password
     	secureConnection - The boolean value for the secure connection.
