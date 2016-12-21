@@ -18,21 +18,21 @@
 
 package org.wso2.carbon.connector.ldap;
 
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.BasicAttributes;
-import javax.naming.directory.DirContext;
-
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.apache.commons.lang.StringUtils;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
+
+import javax.naming.NamingException;
+import javax.naming.directory.*;
+import java.util.Iterator;
 
 public class AddEntry extends AbstractConnector {
 
@@ -54,16 +54,18 @@ public class AddEntry extends AbstractConnector {
 			String classes[] = objectClass.split(",");
 			Attributes entry = new BasicAttributes();
 			Attribute obClassAttr = new BasicAttribute(LDAPConstants.OBJECT_CLASS);
-			for (int i = 0; i < classes.length; i++) {
-				obClassAttr.add(classes[i]);
+			for (String aClass : classes) {
+				obClassAttr.add(aClass);
 			}
 			entry.put(obClassAttr);
-			if (attributesString != null) {
-				String attrSet[] = attributesString.split(",");
-				for (int i = 0; i < attrSet.length; i++) {
-					String keyVals[] = attrSet[i].split("=");
-					Attribute newAttr = new BasicAttribute(keyVals[0]);
-					newAttr.add(keyVals[1]);
+			if(StringUtils.isNotEmpty(attributesString)) {
+				JSONObject object = new JSONObject(attributesString);
+				Iterator keys = object.keys();
+				while (keys.hasNext()) {
+					String key = (String) keys.next();
+					String val = object.getString(key);
+					Attribute newAttr = new BasicAttribute(key);
+					newAttr.add(val);
 					entry.put(newAttr);
 				}
 			}
@@ -82,6 +84,8 @@ public class AddEntry extends AbstractConnector {
 			LDAPUtils.handleErrorResponse(messageContext,
 			                              LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
 			throw new SynapseException(e);
+		} catch (JSONException e) {
+			handleException("Error while passing the JSON object", e, messageContext);
 		}
 	}
 }

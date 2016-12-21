@@ -18,24 +18,23 @@
 
 package org.wso2.carbon.connector.integration.test.ldap;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
 import com.unboundid.ldap.listener.InMemoryListenerConfig;
 import com.unboundid.ldap.sdk.DN;
 import com.unboundid.ldap.sdk.Entry;
+import org.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.json.JSONObject;
 import org.wso2.connector.integration.test.base.ConnectorIntegrationTestBase;
 import org.wso2.connector.integration.test.base.RestResponse;
 
 import javax.naming.Context;
 import javax.naming.directory.*;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
 public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 
@@ -55,7 +54,7 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 	@BeforeClass(alwaysRun = true)
 	public void setEnvironment() throws Exception {
 
-		init("ldap-connector-1.0.3-SNAPSHOT");
+		init("ldap-connector-1.0.3");
 
 		esbRequestHeadersMap.put("Accept-Charset", "UTF-8");
 		esbRequestHeadersMap.put("Content-Type", "application/json");
