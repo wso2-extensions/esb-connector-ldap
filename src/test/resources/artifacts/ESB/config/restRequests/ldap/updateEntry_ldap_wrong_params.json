@@ -9,6 +9,11 @@
   "content": {
     "mode": "replace",
     "dn": "uid=testDim22,%s(ldapUserBase)",
-    "attributes": "mail=testDim@wso2.com,givenName=Dim2,displayName=Dim2,homePhone=0719084638"
+    "attributes": {
+      "mail": "testDim1s22c@wso2.com",
+      "userPassword": "12345",
+      "sn": "dim",
+      "cn": "dim"
+    }
   }
 }
