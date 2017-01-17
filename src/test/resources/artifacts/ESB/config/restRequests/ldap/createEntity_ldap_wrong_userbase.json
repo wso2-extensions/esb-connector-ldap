@@ -9,6 +9,11 @@
   "content": {
     "objectClass": "inetOrgPerson",
     "dn": "uid=%s(testUserId),ou=example,dc=example",
-    "attributes": "mail=testDim20@wso2.com,userPassword=12345,sn=dim,cn=dim"
+    "attributes": {
+      "mail": "testDim1s22c@wso2.com",
+      "userPassword": "12345",
+      "sn": "dim",
+      "cn": "dim"
+    }
   }
 }
