@@ -39,83 +39,79 @@ import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.synapse.transport.nhttp.NhttpConstants;
 
 public class LDAPUtils {
-	private static final OMFactory fac = OMAbstractFactory.getOMFactory();
-	protected static Log log = LogFactory.getLog(LDAPUtils.class);
-	private static OMNamespace ns =
-			fac.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE, LDAPConstants.NAMESPACE);
+    private static final OMFactory fac = OMAbstractFactory.getOMFactory();
+    protected static Log log = LogFactory.getLog(LDAPUtils.class);
+    private static OMNamespace ns = fac.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE, LDAPConstants.NAMESPACE);
 
-	protected static DirContext getDirectoryContext(MessageContext messageContext)
-			throws NamingException {
-		String providerUrl =
-				LDAPUtils.lookupContextParams(messageContext, LDAPConstants.PROVIDER_URL);
-		String securityPrincipal =
-				LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURITY_PRINCIPAL);
-		String securityCredentials =
-				LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURITY_CREDENTIALS);
-		boolean secureConnection = Boolean.valueOf(
-				LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURE_CONNECTION));
-		boolean disableSSLCertificateChecking = Boolean.valueOf(LDAPUtils.lookupContextParams(
-				messageContext, LDAPConstants.DISABLE_SSL_CERT_CHECKING));
+    protected static DirContext getDirectoryContext(MessageContext messageContext)
+            throws NamingException {
+        String providerUrl = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.PROVIDER_URL);
+        String securityPrincipal = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURITY_PRINCIPAL);
+        String securityCredentials = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURITY_CREDENTIALS);
+        boolean secureConnection = Boolean
+                .valueOf(LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURE_CONNECTION));
+        boolean disableSSLCertificateChecking = Boolean.valueOf(LDAPUtils.lookupContextParams(
+                messageContext, LDAPConstants.DISABLE_SSL_CERT_CHECKING));
 
-		Hashtable env = new Hashtable();
-		env.put(Context.INITIAL_CONTEXT_FACTORY, LDAPConstants.COM_SUN_JNDI_LDAP_LDAPCTXFACTORY);
-		env.put(Context.PROVIDER_URL, providerUrl);
-		env.put(Context.SECURITY_PRINCIPAL, securityPrincipal);
-		env.put(Context.SECURITY_CREDENTIALS, securityCredentials);
-		if (secureConnection) {
-			env.put(Context.SECURITY_PROTOCOL, LDAPConstants.SSL);
-		}
-		if (disableSSLCertificateChecking) {
-			env.put(LDAPConstants.JAVA_NAMING_LDAP_FACTORY_SOCKET,
-			        LDAPConstants.ORG_WSO2_CARBON_CONNECTOR_SECURITY_MYSSLSOCKETFACTORY);
-		}
+        Hashtable env = new Hashtable();
+        env.put(Context.INITIAL_CONTEXT_FACTORY, LDAPConstants.COM_SUN_JNDI_LDAP_LDAPCTXFACTORY);
+        env.put(Context.PROVIDER_URL, providerUrl);
+        env.put(Context.SECURITY_PRINCIPAL, securityPrincipal);
+        env.put(Context.SECURITY_CREDENTIALS, securityCredentials);
+        if (secureConnection) {
+            env.put(Context.SECURITY_PROTOCOL, LDAPConstants.SSL);
+        }
+        if (disableSSLCertificateChecking) {
+            env.put(LDAPConstants.JAVA_NAMING_LDAP_FACTORY_SOCKET,
+                    LDAPConstants.ORG_WSO2_CARBON_CONNECTOR_SECURITY_MYSSLSOCKETFACTORY);
+        }
 
-		DirContext ctx = null;
-		ctx = new InitialDirContext(env);
-		return ctx;
-	}
+        DirContext ctx = null;
+        ctx = new InitialDirContext(env);
+        return ctx;
+    }
 
-	public static String lookupContextParams(MessageContext ctxt, String paramName) {
-		return (String) ctxt.getProperty(paramName);
-	}
+    public static String lookupContextParams(MessageContext ctxt, String paramName) {
+        return (String) ctxt.getProperty(paramName);
+    }
 
-	public static void storeAdminLoginDatails(MessageContext ctxt, String url, String principal,
-	                                          String password) {
-		ctxt.setProperty(LDAPConstants.PROVIDER_URL, url);
-		ctxt.setProperty(LDAPConstants.SECURITY_PRINCIPAL, principal);
-		ctxt.setProperty(LDAPConstants.SECURITY_CREDENTIALS, password);
-	}
+    public static void storeAdminLoginDatails(MessageContext ctxt, String url, String principal,
+                                              String password) {
+        ctxt.setProperty(LDAPConstants.PROVIDER_URL, url);
+        ctxt.setProperty(LDAPConstants.SECURITY_PRINCIPAL, principal);
+        ctxt.setProperty(LDAPConstants.SECURITY_CREDENTIALS, password);
+    }
 
-	public static void preparePayload(MessageContext messageContext, OMElement element) {
-		SOAPBody soapBody = messageContext.getEnvelope().getBody();
-		for (Iterator itr = soapBody.getChildElements(); itr.hasNext(); ) {
-			OMElement child = (OMElement) itr.next();
-			child.detach();
-		}
-		soapBody.addChild(element);
-	}
+    public static void preparePayload(MessageContext messageContext, OMElement element) {
+        SOAPBody soapBody = messageContext.getEnvelope().getBody();
+        for (Iterator itr = soapBody.getChildElements(); itr.hasNext(); ) {
+            OMElement child = (OMElement) itr.next();
+            child.detach();
+        }
+        soapBody.addChild(element);
+    }
 
-	public static void preparePayload(MessageContext messageContext, Exception e, int errorCode) {
-		OMElement omElement = fac.createOMElement(LDAPConstants.ERROR, ns);
-		OMElement message = fac.createOMElement(LDAPConstants.ERROR_MESSAGE, ns);
-		OMElement code = fac.createOMElement(LDAPConstants.ERROR_CODE, ns);
-		message.addChild(fac.createOMText(omElement, e.getMessage()));
-		code.addChild(fac.createOMText(omElement, errorCode + ""));
-		omElement.addChild(message);
-		omElement.addChild(code);
-		preparePayload(messageContext, omElement);
-	}
+    public static void preparePayload(MessageContext messageContext, Exception e, int errorCode) {
+        OMElement omElement = fac.createOMElement(LDAPConstants.ERROR, ns);
+        OMElement message = fac.createOMElement(LDAPConstants.ERROR_MESSAGE, ns);
+        OMElement code = fac.createOMElement(LDAPConstants.ERROR_CODE, ns);
+        message.addChild(fac.createOMText(omElement, e.getMessage()));
+        code.addChild(fac.createOMText(omElement, errorCode + ""));
+        omElement.addChild(message);
+        omElement.addChild(code);
+        preparePayload(messageContext, omElement);
+    }
 
-	public static void handleErrorResponse(MessageContext messageContext, int errorCode,
-	                                       Exception e) {
-		org.apache.axis2.context.MessageContext axis2MessageContext =
-				((Axis2MessageContext) messageContext).getAxis2MessageContext();
-		String errorMessage = e.getMessage();
-		axis2MessageContext.setProperty(NhttpConstants.HTTP_SC, 500);
-		messageContext.setProperty(SynapseConstants.ERROR_CODE, errorCode); // This doesn't work
-		messageContext.setProperty(SynapseConstants.ERROR_MESSAGE, errorMessage);
-		messageContext.setProperty(SynapseConstants.ERROR_EXCEPTION, e);
-		messageContext.setFaultResponse(true);
-		preparePayload(messageContext, e, errorCode);
-	}
+    public static void handleErrorResponse(MessageContext messageContext, int errorCode,
+                                           Exception e) {
+        org.apache.axis2.context.MessageContext axis2MessageContext =
+                ((Axis2MessageContext) messageContext).getAxis2MessageContext();
+        String errorMessage = e.getMessage();
+        axis2MessageContext.setProperty(NhttpConstants.HTTP_SC, 500);
+        messageContext.setProperty(SynapseConstants.ERROR_CODE, errorCode); // This doesn't work
+        messageContext.setProperty(SynapseConstants.ERROR_MESSAGE, errorMessage);
+        messageContext.setProperty(SynapseConstants.ERROR_EXCEPTION, e);
+        messageContext.setFaultResponse(true);
+        preparePayload(messageContext, e, errorCode);
+    }
 }

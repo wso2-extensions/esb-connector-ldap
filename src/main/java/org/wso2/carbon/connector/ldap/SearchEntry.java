@@ -34,145 +34,137 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
 
+import java.util.Iterator;
+
 public class SearchEntry extends AbstractConnector {
-	protected static Log log = LogFactory.getLog(SearchEntry.class);
+    protected static Log log = LogFactory.getLog(SearchEntry.class);
 
-	@Override
-	public void connect(MessageContext messageContext) throws ConnectException {
-		String objectClass = (String) getParameter(messageContext, LDAPConstants.OBJECT_CLASS);
-		String filter = (String) getParameter(messageContext, LDAPConstants.FILTERS);
-		String dn = (String) getParameter(messageContext, LDAPConstants.DN);
-		String returnAttributes[] =
-				((String) getParameter(messageContext, LDAPConstants.ATTRIBUTES)).split(",");
-		boolean onlyOneReference = Boolean.valueOf(
-				(String) getParameter(messageContext, LDAPConstants.ONLY_ONE_REFERENCE));
+    @Override
+    public void connect(MessageContext messageContext) throws ConnectException {
+        String objectClass = (String) getParameter(messageContext, LDAPConstants.OBJECT_CLASS);
+        String filter = (String) getParameter(messageContext, LDAPConstants.FILTERS);
+        String dn = (String) getParameter(messageContext, LDAPConstants.DN);
+        String returnAttributes[] = ((String) getParameter(messageContext, LDAPConstants.ATTRIBUTES)).split(",");
+        boolean onlyOneReference = Boolean.valueOf(
+                (String) getParameter(messageContext, LDAPConstants.ONLY_ONE_REFERENCE));
+        OMFactory factory = OMAbstractFactory.getOMFactory();
+        OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE,
+                LDAPConstants.NAMESPACE);
+        OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
+        try {
+            DirContext context = LDAPUtils.getDirectoryContext(messageContext);
 
-		OMFactory factory = OMAbstractFactory.getOMFactory();
-		OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE,
-		                                           LDAPConstants.NAMESPACE);
-		OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
+            String attrFilter = generateAttrFilter(filter, messageContext);
+            String searchFilter = generateSearchFilter(objectClass, attrFilter);
+            NamingEnumeration<SearchResult> results = null;
+            try {
+                results = searchInUserBase(dn, searchFilter, returnAttributes, SearchControls.SUBTREE_SCOPE, context);
+                SearchResult entityResult = null;
+                if (!onlyOneReference) {
+                    if (results != null && results.hasMore()) {
+                        while (results.hasMore()) {
+                            entityResult = results.next();
+                            result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
+                        }
+                    }
+                } else {
+                    entityResult = makeSureOnlyOneMatch(results);
+                    if (entityResult == null)
+                        throw new NamingException("Multiple objects for the searched target have been found. Try to " +
+                                "change onlyOneReference option");
+                    result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
+                }
+                LDAPUtils.preparePayload(messageContext, result);
+                if (context != null) {
+                    context.close();
+                }
+            } catch (NamingException e) { //LDAP Errors are catched
+                LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.SEARCH_ERROR, e);
+                throw new SynapseException(e);
+            }
+        } catch (NamingException e) { //Authentication failures are catched
+            LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
+            throw new SynapseException(e);
+        }
+    }
 
-		try {
-			DirContext context = LDAPUtils.getDirectoryContext(messageContext);
+    private OMElement prepareNode(SearchResult entityResult, OMFactory factory, OMNamespace ns, String returnAttributes[])
+            throws NamingException {
+        Attributes attributes = entityResult.getAttributes();
+        Attribute attribute;
+        OMElement entry = factory.createOMElement(LDAPConstants.ENTRY, ns);
+        OMElement dnattr = factory.createOMElement(LDAPConstants.DN, ns);
+        dnattr.setText(entityResult.getNameInNamespace());
+        entry.addChild(dnattr);
 
-			String attrFilter = generateAttrFilter(filter);
-			String searchFilter = generateSearchFilter(objectClass, attrFilter);
-			NamingEnumeration<SearchResult> results = null;
-			try {
-				results = searchInUserBase(dn, searchFilter, returnAttributes,
-				                           SearchControls.SUBTREE_SCOPE, context);
-				SearchResult entityResult = null;
+        for (int i = 0; i < returnAttributes.length; i++) {
+            attribute = attributes.get(returnAttributes[i]);
+            if (attribute != null) {
+                NamingEnumeration ne = null;
+                ne = attribute.getAll();
+                while (ne.hasMoreElements()) {
+                    String value = (String) ne.next();
+                    OMElement attr = factory.createOMElement(returnAttributes[i], ns);
+                    attr.setText(value);
+                    entry.addChild(attr);
+                }
+            }
+        }
+        return entry;
+    }
 
-				if (!onlyOneReference) {
-					if (results != null && results.hasMore()) {
-						while (results.hasMore()) {
-							entityResult = results.next();
-							result.addChild(
-									prepareNode(entityResult, factory, ns, returnAttributes));
-						}
-					}
-				} else {
-					entityResult = makeSureOnlyOneMatch(results);
-					if (entityResult == null)
-						throw new NamingException(
-								"Multiple objects for the searched target have been found. Try to " +
-								"change onlyOneReference option");
-					result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
-				}
+    private SearchResult makeSureOnlyOneMatch(NamingEnumeration<SearchResult> results) {
+        SearchResult searchResult = null;
 
-				LDAPUtils.preparePayload(messageContext, result);
+        if (results.hasMoreElements()) {
+            searchResult = (SearchResult) results.nextElement();
 
-				if (context != null) {
-					context.close();
-				}
+            // Make sure there is not another item available, there should be only 1 match
+            if (results.hasMoreElements()) {
+                // Here the code has matched multiple objects for the searched target
+                return null;
+            }
+        }
+        return searchResult;
+    }
 
-			} catch (NamingException e) { //LDAP Errors are catched
-				LDAPUtils.handleErrorResponse(messageContext,
-				                              LDAPConstants.ErrorConstants.SEARCH_ERROR, e);
-				throw new SynapseException(e);
-			}
+    private NamingEnumeration<SearchResult> searchInUserBase(String dn, String searchFilter,
+                                                             String[] returningAttributes,
+                                                             int searchScope, DirContext rootContext)
+            throws NamingException {
+        String userBase = dn;
+        SearchControls userSearchControl = new SearchControls();
+        userSearchControl.setReturningAttributes(returningAttributes);
+        userSearchControl.setSearchScope(searchScope);
+        NamingEnumeration<SearchResult> userSearchResults;
+        userSearchResults = rootContext.search(userBase, searchFilter, userSearchControl);
+        return userSearchResults;
 
-		} catch (NamingException e) { //Authentication failures are catched
-			LDAPUtils.handleErrorResponse(messageContext,
-			                              LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
-			throw new SynapseException(e);
-		}
-	}
+    }
 
-	private OMElement prepareNode(SearchResult entityResult, OMFactory factory, OMNamespace ns,
-	                              String returnAttributes[]) throws NamingException {
-		Attributes attributes = entityResult.getAttributes();
-		Attribute attribute;
-		OMElement entry = factory.createOMElement(LDAPConstants.ENTRY, ns);
-		OMElement dnattr = factory.createOMElement(LDAPConstants.DN, ns);
-		dnattr.setText(entityResult.getNameInNamespace());
-		entry.addChild(dnattr);
+    private String generateAttrFilter(String filter, MessageContext messageContext) {
+        String attrFilter = "";
+        try {
+            JSONObject object = new JSONObject(filter);
+            Iterator keys = object.keys();
+            while (keys.hasNext()) {
+                String key = (String) keys.next();
+                attrFilter += "(";
+                attrFilter += key + "=" + object.getString(key);
+                attrFilter += ")";
+            }
+        } catch (JSONException e) {
+            handleException("Error while passing the JSON object", e, messageContext);
+        }
+        return attrFilter;
+    }
 
-		for (int i = 0; i < returnAttributes.length; i++) {
-			attribute = attributes.get(returnAttributes[i]);
-			if (attribute != null) {
-				NamingEnumeration ne = null;
-				ne = attribute.getAll();
-				while (ne.hasMoreElements()) {
-					String value = (String) ne.next();
-					OMElement attr = factory.createOMElement(returnAttributes[i], ns);
-					attr.setText(value);
-					entry.addChild(attr);
-				}
-			}
-		}
-		return entry;
-	}
-
-	private SearchResult makeSureOnlyOneMatch(NamingEnumeration<SearchResult> results) {
-		SearchResult searchResult = null;
-
-		if (results.hasMoreElements()) {
-			searchResult = (SearchResult) results.nextElement();
-
-			// Make sure there is not another item available, there should be only 1 match
-			if (results.hasMoreElements()) {
-				// Here the code has matched multiple objects for the searched target
-				return null;
-			}
-		}
-		return searchResult;
-	}
-
-	private NamingEnumeration<SearchResult> searchInUserBase(String dn, String searchFilter,
-	                                                         String[] returningAttributes,
-	                                                         int searchScope,
-	                                                         DirContext rootContext)
-			throws NamingException {
-		String userBase = dn;
-		SearchControls userSearchControl = new SearchControls();
-		userSearchControl.setReturningAttributes(returningAttributes);
-		userSearchControl.setSearchScope(searchScope);
-		NamingEnumeration<SearchResult> userSearchResults;
-		userSearchResults = rootContext.search(userBase, searchFilter, userSearchControl);
-		return userSearchResults;
-
-	}
-
-	private String generateAttrFilter(String filter) {
-		String attrFilter = "";
-		if (filter != null && filter.trim().length() > 0 && !filter.trim().equals("null")) {
-			String filterArray[] = filter.split(",");
-			if (filterArray != null && filterArray.length > 0) {
-				for (int i = 0; i < filterArray.length; i++) {
-					attrFilter += "(";
-					attrFilter += filterArray[i];
-					attrFilter += ")";
-				}
-			}
-		}
-		return attrFilter;
-	}
-
-	private String generateSearchFilter(String objectClass, String attrFilter) {
-		return "(&(objectClass=" + objectClass + ")" + attrFilter + ")";
-	}
+    private String generateSearchFilter(String objectClass, String attrFilter) {
+        return "(&(objectClass=" + objectClass + ")" + attrFilter + ")";
+    }
 }

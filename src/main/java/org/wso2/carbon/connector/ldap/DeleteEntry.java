@@ -33,46 +33,40 @@ import org.wso2.carbon.connector.core.ConnectException;
 
 public class DeleteEntry extends AbstractConnector {
 
-	@Override
-	public void connect(MessageContext messageContext) throws ConnectException {
-		String dn = (String) getParameter(messageContext, LDAPConstants.DN);
+    @Override
+    public void connect(MessageContext messageContext) throws ConnectException {
+        String dn = (String) getParameter(messageContext, LDAPConstants.DN);
 
-		OMFactory factory = OMAbstractFactory.getOMFactory();
-		OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE,
-		                                           LDAPConstants.NAMESPACE);
-		OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
-		OMElement message = factory.createOMElement(LDAPConstants.MESSAGE, ns);
+        OMFactory factory = OMAbstractFactory.getOMFactory();
+        OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE, LDAPConstants.NAMESPACE);
+        OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
+        OMElement message = factory.createOMElement(LDAPConstants.MESSAGE, ns);
 
-		try {
-			DirContext context = LDAPUtils.getDirectoryContext(messageContext);
-			try {
-				Attributes matchingAttributes = new BasicAttributes();
-				//search for the existance of dn
-				matchingAttributes.put(new BasicAttribute(LDAPConstants.DN));
-				NamingEnumeration<SearchResult> searchResult =
-						context.search(dn, matchingAttributes);
-				try {
-					context.destroySubcontext(dn);
-					message.setText(LDAPConstants.SUCCESS);
-					result.addChild(message);
-					LDAPUtils.preparePayload(messageContext, result);
-				} catch (NamingException e) {
-					log.error("Failed to delete ldap entry with dn = " + dn, e);
-					LDAPUtils.handleErrorResponse(messageContext,
-					                              LDAPConstants.ErrorConstants.DELETE_ENTRY_ERROR,
-					                              e);
-					throw new SynapseException(e);
-				}
-			} catch (NamingException e) {
-				LDAPUtils.handleErrorResponse(messageContext,
-				                              LDAPConstants.ErrorConstants.ENTRY_DOESNOT_EXISTS_ERROR,
-				                              e);
-				throw new SynapseException(e);
-			}
-		} catch (NamingException e) {
-			LDAPUtils.handleErrorResponse(messageContext,
-			                              LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
-			throw new SynapseException(e);
-		}
-	}
+        try {
+            DirContext context = LDAPUtils.getDirectoryContext(messageContext);
+            try {
+                Attributes matchingAttributes = new BasicAttributes();
+                //search for the existance of dn
+                matchingAttributes.put(new BasicAttribute(LDAPConstants.DN));
+                NamingEnumeration<SearchResult> searchResult = context.search(dn, matchingAttributes);
+                try {
+                    context.destroySubcontext(dn);
+                    message.setText(LDAPConstants.SUCCESS);
+                    result.addChild(message);
+                    LDAPUtils.preparePayload(messageContext, result);
+                } catch (NamingException e) {
+                    log.error("Failed to delete ldap entry with dn = " + dn, e);
+                    LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.DELETE_ENTRY_ERROR, e);
+                    throw new SynapseException(e);
+                }
+            } catch (NamingException e) {
+                LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.ENTRY_DOESNOT_EXISTS_ERROR,
+                        e);
+                throw new SynapseException(e);
+            }
+        } catch (NamingException e) {
+            LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
+            throw new SynapseException(e);
+        }
+    }
 }

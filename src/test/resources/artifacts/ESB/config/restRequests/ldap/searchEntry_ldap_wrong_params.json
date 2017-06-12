@@ -10,6 +10,8 @@
     "dn": "%s(ldapUserBase)",
     "objectClass": "inetOrgPerson2",
     "attributes": "mail,uid,givenName",
-    "filters": "uid=testDim"
+    "filters": {
+      "uid": "testDim"
+    }
   }
 }

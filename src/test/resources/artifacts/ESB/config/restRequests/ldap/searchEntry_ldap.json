@@ -6,11 +6,13 @@
   "disableSSLCertificateChecking": "%s(disableSSLCertificateChecking)",
   "application": "ldap",
   "operation": "searchEntity",
-  "onlyOneReference":"%s(onlyOneReference)",
+  "onlyOneReference": "%s(onlyOneReference)",
   "content": {
     "dn": "%s(ldapUserBase)",
     "objectClass": "inetOrgPerson",
     "attributes": "mail,uid,givenName",
-    "filters": "uid=%s(testUserId)"
+    "filters": {
+      "uid": "%s(testUserId)"
+    }
   }
 }
