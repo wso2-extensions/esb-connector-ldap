@@ -36,56 +36,50 @@ import java.util.Iterator;
 
 public class AddEntry extends AbstractConnector {
 
-	@Override
-	public void connect(MessageContext messageContext) throws ConnectException {
-		String objectClass = (String) getParameter(messageContext, LDAPConstants.OBJECT_CLASS);
-		String attributesString = (String) getParameter(messageContext, LDAPConstants.ATTRIBUTES);
-		String dn = (String) getParameter(messageContext, LDAPConstants.DN);
-
-		OMFactory factory = OMAbstractFactory.getOMFactory();
-		OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE,
-		                                           LDAPConstants.NAMESPACE);
-		OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
-		OMElement message = factory.createOMElement(LDAPConstants.MESSAGE, ns);
-
-		try {
-			DirContext context = LDAPUtils.getDirectoryContext(messageContext);
-
-			String classes[] = objectClass.split(",");
-			Attributes entry = new BasicAttributes();
-			Attribute obClassAttr = new BasicAttribute(LDAPConstants.OBJECT_CLASS);
-			for (String aClass : classes) {
-				obClassAttr.add(aClass);
-			}
-			entry.put(obClassAttr);
-			if(StringUtils.isNotEmpty(attributesString)) {
-				JSONObject object = new JSONObject(attributesString);
-				Iterator keys = object.keys();
-				while (keys.hasNext()) {
-					String key = (String) keys.next();
-					String val = object.getString(key);
-					Attribute newAttr = new BasicAttribute(key);
-					newAttr.add(val);
-					entry.put(newAttr);
-				}
-			}
-			try {
-				context.createSubcontext(dn, entry);
-				message.setText(LDAPConstants.SUCCESS);
-				result.addChild(message);
-				LDAPUtils.preparePayload(messageContext, result);
-			} catch (NamingException e) {
-				log.error("Failed to create ldap entry with dn = " + dn, e);
-				LDAPUtils.handleErrorResponse(messageContext,
-				                              LDAPConstants.ErrorConstants.ADD_ENTRY_ERROR, e);
-				throw new SynapseException(e);
-			}
-		} catch (NamingException e) {
-			LDAPUtils.handleErrorResponse(messageContext,
-			                              LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
-			throw new SynapseException(e);
-		} catch (JSONException e) {
-			handleException("Error while passing the JSON object", e, messageContext);
-		}
-	}
+    @Override
+    public void connect(MessageContext messageContext) throws ConnectException {
+        String objectClass = (String) getParameter(messageContext, LDAPConstants.OBJECT_CLASS);
+        String attributesString = (String) getParameter(messageContext, LDAPConstants.ATTRIBUTES);
+        String dn = (String) getParameter(messageContext, LDAPConstants.DN);
+        OMFactory factory = OMAbstractFactory.getOMFactory();
+        OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE, LDAPConstants.NAMESPACE);
+        OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
+        OMElement message = factory.createOMElement(LDAPConstants.MESSAGE, ns);
+        try {
+            DirContext context = LDAPUtils.getDirectoryContext(messageContext);
+            String classes[] = objectClass.split(",");
+            Attributes entry = new BasicAttributes();
+            Attribute obClassAttr = new BasicAttribute(LDAPConstants.OBJECT_CLASS);
+            for (String aClass : classes) {
+                obClassAttr.add(aClass);
+            }
+            entry.put(obClassAttr);
+            if (StringUtils.isNotEmpty(attributesString)) {
+                JSONObject object = new JSONObject(attributesString);
+                Iterator keys = object.keys();
+                while (keys.hasNext()) {
+                    String key = (String) keys.next();
+                    String val = object.getString(key);
+                    Attribute newAttr = new BasicAttribute(key);
+                    newAttr.add(val);
+                    entry.put(newAttr);
+                }
+            }
+            try {
+                context.createSubcontext(dn, entry);
+                message.setText(LDAPConstants.SUCCESS);
+                result.addChild(message);
+                LDAPUtils.preparePayload(messageContext, result);
+            } catch (NamingException e) {
+                log.error("Failed to create ldap entry with dn = " + dn, e);
+                LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.ADD_ENTRY_ERROR, e);
+                throw new SynapseException(e);
+            }
+        } catch (NamingException e) {
+            LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
+            throw new SynapseException(e);
+        } catch (JSONException e) {
+            handleException("Error while passing the JSON object", e, messageContext);
+        }
+    }
 }
