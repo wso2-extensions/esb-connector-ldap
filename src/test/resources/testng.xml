@@ -26,13 +26,20 @@
         <listener class-name="org.wso2.carbon.automation.core.PlatformTestManager"/>
         <listener class-name="org.wso2.carbon.automation.core.PlatformReportManager"/>
     </listeners>
-
-    <test name="LDAP-Connector-Test" preserve-order="true" verbose="2">
-        <packages>
-            <package name="org.wso2.carbon.connector.integration.test.ldap"/>
-        </packages>
+    <test name="LDAP-Connector-Unit-Test">
+        <classes>
+            <class name="org.wso2.carbon.connector.unit.test.ldap.AddEntryTest"/>
+            <class name="org.wso2.carbon.connector.unit.test.ldap.AuthenticateTest"/>
+            <class name="org.wso2.carbon.connector.unit.test.ldap.DeleteEntryTest"/>
+            <class name="org.wso2.carbon.connector.unit.test.ldap.SearchEntryTest"/>
+            <class name="org.wso2.carbon.connector.unit.test.ldap.UpdateEntryTest"/>
+        </classes>
     </test>
-
+    <test name="LDAP-Connector-Integration-Test" preserve-order="true" verbose="2">
+        <classes>
+            <class name="org.wso2.carbon.connector.integration.test.ldap.LdapConnectorIntegrationTest"/>
+        </classes>
+    </test>
 </suite>
 
 
