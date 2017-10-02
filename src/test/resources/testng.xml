@@ -28,11 +28,11 @@
     </listeners>
     <test name="LDAP-Connector-Unit-Test">
         <classes>
-            <class name="org.wso2.carbon.connector.unit.test.ldap.AddEntryTest" />
-            <class name="org.wso2.carbon.connector.unit.test.ldap.AuthenticateTest" />
-            <class name="org.wso2.carbon.connector.unit.test.ldap.DeleteEntryTest" />
-            <class name="org.wso2.carbon.connector.unit.test.ldap.SearchEntryTest" />
-            <class name="org.wso2.carbon.connector.unit.test.ldap.UpdateEntryTest" />
+            <class name="org.wso2.carbon.connector.unit.test.ldap.AddEntryTest"/>
+            <class name="org.wso2.carbon.connector.unit.test.ldap.AuthenticateTest"/>
+            <class name="org.wso2.carbon.connector.unit.test.ldap.DeleteEntryTest"/>
+            <class name="org.wso2.carbon.connector.unit.test.ldap.SearchEntryTest"/>
+            <class name="org.wso2.carbon.connector.unit.test.ldap.UpdateEntryTest"/>
         </classes>
     </test>
     <test name="LDAP-Connector-Integration-Test" preserve-order="true" verbose="2">
