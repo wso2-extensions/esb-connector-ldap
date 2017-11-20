@@ -54,7 +54,9 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 	@BeforeClass(alwaysRun = true)
 	public void setEnvironment() throws Exception {
 
-		init("ldap-connector-1.0.5-SNAPSHOT");
+		String connectorName = System.getProperty("connector_name") + "-connector-" +
+				System.getProperty("connector_version") + ".zip";
+		init(connectorName);
 
 		esbRequestHeadersMap.put("Accept-Charset", "UTF-8");
 		esbRequestHeadersMap.put("Content-Type", "application/json");
