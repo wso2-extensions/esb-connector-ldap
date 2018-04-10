@@ -71,13 +71,17 @@ public class SearchEntry extends AbstractConnector {
                             entityResult = results.next();
                             result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
                         }
+                    } else {
+                        throw new NamingException("No matching result or entity found for this search");
                     }
                 } else {
                     entityResult = makeSureOnlyOneMatch(results);
-                    if (entityResult == null)
+                    if (entityResult == null) {
                         throw new NamingException("Multiple objects for the searched target have been found. Try to " +
                                 "change onlyOneReference option");
-                    result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
+                    } else {
+                        result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
+                    }
                 }
                 LDAPUtils.preparePayload(messageContext, result);
                 if (context != null) {
@@ -118,7 +122,7 @@ public class SearchEntry extends AbstractConnector {
         return entry;
     }
 
-    private SearchResult makeSureOnlyOneMatch(NamingEnumeration<SearchResult> results) {
+    private SearchResult makeSureOnlyOneMatch(NamingEnumeration<SearchResult> results) throws NamingException {
         SearchResult searchResult = null;
 
         if (results.hasMoreElements()) {
@@ -129,8 +133,10 @@ public class SearchEntry extends AbstractConnector {
                 // Here the code has matched multiple objects for the searched target
                 return null;
             }
+            return searchResult;
+        } else {
+            throw new NamingException("Could not find a matching entry for this search");
         }
-        return searchResult;
     }
 
     private NamingEnumeration<SearchResult> searchInUserBase(String dn, String searchFilter,
