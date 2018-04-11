@@ -51,7 +51,7 @@ Tested Platform:
     	useEmbeddedLDAP - Use embedded LDAP server or outside ldap sever. If you want to use your LDAP server to test with the Connector, make this value - false
 
 4. Navigate to "{LDAP_HOME}/" and run the following command.
-      $ mvn clean install
+      $ mvn clean install -Dskip-tests=false
 
 NOTE : 
 If you are using Embedded LDAP mode in Integration Testing, please make sure that ldapPort you are assigning in config file is not used by any other application in your local machine.
