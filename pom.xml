@@ -41,6 +41,7 @@
         <bouncycastle.version>1.55</bouncycastle.version>
         <rampart.apache.version>1.6.1-wso2v18</rampart.apache.version>
         <rampart.wso2.version>1.6.1.wso2v18</rampart.wso2.version>
+        <skip-tests>true</skip-tests>
     </properties>
     <dependencies>
         <dependency>
@@ -243,6 +244,7 @@
                 <version>2.12.4</version>
                 <inherited>false</inherited>
                 <configuration>
+                    <skipTests>${skip-tests}</skipTests>
                     <argLine>${surefireArgLine} -ea -Xmx512m</argLine>
                     <disableXmlReport>false</disableXmlReport>
                     <parallel>false</parallel>

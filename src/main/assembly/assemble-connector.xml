@@ -3,7 +3,7 @@
     <formats>
         <format>zip</format>
     </formats>
-    <id>releases</id>
+    <id>connector</id>
 
     <includeBaseDirectory>false</includeBaseDirectory>
 
