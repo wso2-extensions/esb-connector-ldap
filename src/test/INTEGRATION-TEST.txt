@@ -11,16 +11,16 @@ Tested Platform:
 
  - Mac OSX 10.9.2
  - UBUNTU 16.04
- - WSO2 EI 6.1.1
+ - WSO2 EI 6.2.0
 
  STEPS:
 
-1. Make sure the WSO2 EI 6.1.1 zip file with available at "{LDAP_HOME}/repository/"
+1. Make sure the WSO2 EI 6.2.0 zip file with available at "{LDAP_HOME}/repository/"
 
 2.Follow the below mentioned steps for adding valid certificate to access LDAP server over SSL.
 
        	i)   To encrypt the connections, we'll need to configure a certificate authority (https://www.digitalocean.com/community/tutorials/how-to-encrypt-openldap-connections-using-starttls) and use it to sign the keys for the LDAP server.
-       	ii)  Go to new EI 6.1.1 folder and place the created certificate in both "<EI_HOME>/repository/resources/security/" and "{LDAP_CONNECTOR_HOME}/src/test/resources/keystores/products/" folders.
+       	ii)  Go to new EI 6.2.0 folder and place the created certificate in both "<EI_HOME>/repository/resources/security/" and "{LDAP_CONNECTOR_HOME}/src/test/resources/keystores/products/" folders.
        	iii) Navigate to "<EI_HOME>/repository/resources/security/" using command prompt and execute keytool -importcert -file CERT_FILE_NAME -keystore client-truststore.jks -alias "CERT_NAME" in command line to import ldap certificate in to keystore.
        		 Give "wso2carbon" as password. Press "Y" to complete certificate import process.
 
