@@ -12,8 +12,7 @@
     "attributes": {
       "mail": "testDim1s22c@wso2.com",
       "userPassword": "12345",
-      "sn": "dim",
-      "cn": "dim"
+      "sn": "dim"
     }
   }
 }
