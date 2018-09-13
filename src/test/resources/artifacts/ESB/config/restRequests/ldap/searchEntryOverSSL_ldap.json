@@ -1,6 +1,6 @@
 {
   "providerUrl": "%s(providerSSLUrl)",
-  "securityPrincipal": "cn=admin,dc=example,dc=com",
+  "securityPrincipal": "%s(securityPrincipal)",
   "securityCredentials": "%s(securityCredentials)",
   "secureConnection": "true",
   "disableSSLCertificateChecking": "true",
@@ -8,8 +8,11 @@
   "operation": "searchEntity",
   "onlyOneReference":"%s(onlyOneReference)",
   "content": {
-    "dn": "ou=People,dc=example,dc=com",
+    "dn": "%s(ldapUserBase)",
     "objectClass": "inetOrgPerson",
-    "attributes": "mail,uid,givenName"
+    "attributes": "mail,uid,givenName",
+    "filters": {
+      "uid": "%s(testUserId)"
+    }
   }
 }

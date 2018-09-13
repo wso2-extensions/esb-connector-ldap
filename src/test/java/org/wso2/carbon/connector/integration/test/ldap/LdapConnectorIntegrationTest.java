@@ -54,13 +54,20 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 	@BeforeClass(alwaysRun = true)
 	public void setEnvironment() throws Exception {
 
+		addCertificatesToEIKeyStore("client-truststore.jks", "wso2carbon");
 		String connectorName = System.getProperty("connector_name") + "-connector-" +
 				System.getProperty("connector_version") + ".zip";
 		init(connectorName);
+		getApiConfigProperties();
 
 		esbRequestHeadersMap.put("Accept-Charset", "UTF-8");
 		esbRequestHeadersMap.put("Content-Type", "application/json");
-
+		connectorProperties.setProperty("securityPrincipal", connectorProperties.getProperty("securityPrincipal")
+				.replace("<dc>", connectorProperties.getProperty("dc")));
+		connectorProperties.setProperty("ldapUserBase", connectorProperties.getProperty("ldapUserBase")
+				.replace("<dc>", connectorProperties.getProperty("dc")));
+		connectorProperties.setProperty("baseDN", connectorProperties.getProperty("baseDN")
+				.replace("<dc>", connectorProperties.getProperty("dc")));
 		initializeProperties();
 		if (useEmbeddedLDAP) {
 			initializeEmbeddedLDAPServer();
@@ -94,7 +101,7 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 		wso2Entry.addAttribute("objectClass", "dcObject");
 		wso2Entry.addAttribute("objectClass", "organizationalUnit");
 		wso2Entry.addAttribute("ou", "WSO2");
-		wso2Entry.addAttribute("dc", "WSO2");
+		wso2Entry.addAttribute("dc", connectorProperties.getProperty("dc"));
 
 		ldapServer.add(wso2Entry);
 
@@ -270,8 +277,8 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 			RestResponse<JSONObject> esbRestResponse =
 					sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap,
 					                    "searchEntry_ldap_wrong_params.json");
-			Object result = esbRestResponse.getBody().get("result");
-			Assert.assertFalse(result instanceof JSONObject);
+			Object result = esbRestResponse.getBody().get("error");
+			Assert.assertTrue(result instanceof JSONObject);
 		} finally {
 			//Finally deleting Entry with correct dn
 			deleteSampleEntry();
@@ -370,14 +377,19 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 			"ldap {authenticateEntry} integration test with valid " + "parameters.")
 	public void testSuccessSSLAuthentication() throws Exception {
 
-		RestResponse<JSONObject> esbRestResponse =
-				sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap,
-				                    "authenticateUserSSL_ldap.json");
+		createSampleEntity();
+		try {
+			RestResponse<JSONObject> esbRestResponse =
+					sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap,
+							"authenticateUserSSL_ldap.json");
 
-		Assert.assertTrue(esbRestResponse.getBody().has("result"));
-		JSONObject result = esbRestResponse.getBody().getJSONObject("result");
-		Assert.assertNotNull(result);
-		Assert.assertEquals(result.getString("message"), "Success");
+			Assert.assertTrue(esbRestResponse.getBody().has("result"));
+			JSONObject result = esbRestResponse.getBody().getJSONObject("result");
+			Assert.assertNotNull(result);
+			Assert.assertEquals(result.getString("message"), "Success");
+		} finally {
+			deleteSampleEntry();
+		}
 	}
 
 	/*
@@ -404,12 +416,17 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 			"ldap {searchEntryOverSSL} integration test with mandatory " + "parameters.")
 	public void testSearchEntryOverSSLWithValidParameters() throws Exception {
 
-		RestResponse<JSONObject> esbRestResponse =
-				sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap,
-				                    "searchEntryOverSSL_ldap.json");
+		createSampleEntity();
+		try {
+			RestResponse<JSONObject> esbRestResponse =
+					sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap,
+							"searchEntryOverSSL_ldap.json");
 
-		JSONObject result = esbRestResponse.getBody().getJSONObject("result");
-		Assert.assertNotNull(result);
+			JSONObject result = esbRestResponse.getBody().getJSONObject("result");
+			Assert.assertNotNull(result);
+		} finally {
+			deleteSampleEntry();
+		}
 	}
 
 	/**
@@ -447,7 +464,7 @@ public class LdapConnectorIntegrationTest extends ConnectorIntegrationTestBase {
 		entry.put(mailAttr);
 
 		Attribute passAttr = new BasicAttribute("userPassword");
-		passAttr.add("12345");
+		passAttr.add(connectorProperties.getProperty("securityCredentials"));
 		entry.put(passAttr);
 
 		Attribute snAttr = new BasicAttribute("sn");

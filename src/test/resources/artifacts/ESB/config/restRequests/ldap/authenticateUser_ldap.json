@@ -8,6 +8,6 @@
   "operation": "authenticate",
   "content": {
     "dn": "uid=%s(testUserId),%s(ldapUserBase)",
-    "password": "12345"
+    "password": "%s(securityCredentials)"
   }
 }
