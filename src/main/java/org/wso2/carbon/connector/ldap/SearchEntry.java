@@ -49,6 +49,7 @@ public class SearchEntry extends AbstractConnector {
         String objectClass = (String) getParameter(messageContext, LDAPConstants.OBJECT_CLASS);
         String filter = (String) getParameter(messageContext, LDAPConstants.FILTERS);
         String dn = (String) getParameter(messageContext, LDAPConstants.DN);
+        int limit = Integer.parseInt((String) getParameter(messageContext, LDAPConstants.SEARCH_RESULT_LIMIT));
         String returnAttributes[] = ((String) getParameter(messageContext, LDAPConstants.ATTRIBUTES)).split(",");
         boolean onlyOneReference = Boolean.valueOf(
                 (String) getParameter(messageContext, LDAPConstants.ONLY_ONE_REFERENCE));
@@ -63,11 +64,11 @@ public class SearchEntry extends AbstractConnector {
             String searchFilter = generateSearchFilter(objectClass, attrFilter);
             NamingEnumeration<SearchResult> results = null;
             try {
-                results = searchInUserBase(dn, searchFilter, returnAttributes, SearchControls.SUBTREE_SCOPE, context);
+                results = searchInUserBase(dn, searchFilter, returnAttributes, SearchControls.SUBTREE_SCOPE, context,limit);
                 SearchResult entityResult = null;
                 if (!onlyOneReference) {
                     if (results != null && results.hasMore()) {
-                        while (results.hasMore()) {
+                        while (results.hasMoreElements()) {
                             entityResult = results.next();
                             result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
                         }
@@ -141,12 +142,13 @@ public class SearchEntry extends AbstractConnector {
 
     private NamingEnumeration<SearchResult> searchInUserBase(String dn, String searchFilter,
                                                              String[] returningAttributes,
-                                                             int searchScope, DirContext rootContext)
+                                                             int searchScope, DirContext rootContext,int limit)
             throws NamingException {
         String userBase = dn;
         SearchControls userSearchControl = new SearchControls();
         userSearchControl.setReturningAttributes(returningAttributes);
         userSearchControl.setSearchScope(searchScope);
+        userSearchControl.setCountLimit(limit);
         NamingEnumeration<SearchResult> userSearchResults;
         userSearchResults = rootContext.search(userBase, searchFilter, userSearchControl);
         return userSearchResults;
