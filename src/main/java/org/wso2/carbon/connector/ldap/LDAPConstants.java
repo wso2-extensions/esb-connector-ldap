@@ -51,6 +51,8 @@ public class LDAPConstants {
     public static final String JAVA_NAMING_LDAP_FACTORY_SOCKET = "java.naming.ldap.factory.socket";
     public static final String ORG_WSO2_CARBON_CONNECTOR_SECURITY_MYSSLSOCKETFACTORY =
             "org.wso2.carbon.connector.security.MySSLSocketFactory";
+    public static final String SEARCH_RESULT_LIMIT =
+            "limit";
 
     public static final class ErrorConstants {
         public static final int SEARCH_ERROR = 7000001;
