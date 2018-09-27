@@ -31,6 +31,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.commons.logging.Log;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
@@ -39,6 +40,7 @@ import org.json.JSONObject;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
 
+import java.nio.ByteBuffer;
 import java.util.Iterator;
 
 public class SearchEntry extends AbstractConnector {
@@ -50,6 +52,17 @@ public class SearchEntry extends AbstractConnector {
         String filter = (String) getParameter(messageContext, LDAPConstants.FILTERS);
         String dn = (String) getParameter(messageContext, LDAPConstants.DN);
         String returnAttributes[] = ((String) getParameter(messageContext, LDAPConstants.ATTRIBUTES)).split(",");
+
+        int limit = 0;
+        String searchLimit = (String) getParameter(messageContext, LDAPConstants.LIMIT);
+        if (!StringUtils.isEmpty(searchLimit)) {
+            try {
+                limit = Integer.parseInt(searchLimit);
+            } catch (NumberFormatException ex) {
+                log.error("Invalid value specified for Search limit. Setting default limit value of 0 (unlimited)");
+            }
+        }
+
         boolean onlyOneReference = Boolean.valueOf(
                 (String) getParameter(messageContext, LDAPConstants.ONLY_ONE_REFERENCE));
         OMFactory factory = OMAbstractFactory.getOMFactory();
@@ -61,17 +74,36 @@ public class SearchEntry extends AbstractConnector {
 
             String attrFilter = generateAttrFilter(filter, messageContext);
             String searchFilter = generateSearchFilter(objectClass, attrFilter);
-            NamingEnumeration<SearchResult> results = null;
             try {
-                results = searchInUserBase(dn, searchFilter, returnAttributes, SearchControls.SUBTREE_SCOPE, context);
-                SearchResult entityResult = null;
+                NamingEnumeration<SearchResult> results = searchInUserBase(
+                        dn, searchFilter, returnAttributes, SearchControls.SUBTREE_SCOPE, context, limit);
+                SearchResult entityResult;
                 if (!onlyOneReference) {
                     if (results != null && results.hasMore()) {
-                        while (results.hasMore()) {
+                        while (results.hasMoreElements()) {
                             entityResult = results.next();
+                            Attributes attributes = entityResult.getAttributes();
+                            if (attributes != null) {
+                                Attribute attribute = attributes.get(LDAPConstants.OBJECT_GUID);
+                                if (attribute != null) {
+
+                                    Object attObject = attribute.get(0);
+                                    final byte[] bytes = (byte[]) attObject;
+
+                                    // https://community.oracle.com/thread/1157698
+                                    // Represent objectGUID in UUID
+                                    if (bytes.length == 16) {
+                                        final ByteBuffer bb = ByteBuffer.wrap(swapBytes(bytes));
+                                        String attr = new java.util.UUID(bb.getLong(), bb.getLong()).toString();
+                                        entityResult.getAttributes().put(LDAPConstants.OBJECT_GUID, attr);
+                                    }
+                                }
+                            }
+
                             result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
                         }
                     } else {
+
                         throw new NamingException("No matching result or entity found for this search");
                     }
                 } else {
@@ -108,6 +140,12 @@ public class SearchEntry extends AbstractConnector {
 
         for (int i = 0; i < returnAttributes.length; i++) {
             attribute = attributes.get(returnAttributes[i]);
+
+            // Remove ";" from returnAttribute elements to prevent invalid xml generation
+            if (returnAttributes[i].contains(";")) {
+                String[] splitResult = returnAttributes[i].split("(?=;)");
+                returnAttributes[i] = splitResult[0];
+            }
             if (attribute != null) {
                 NamingEnumeration ne = null;
                 ne = attribute.getAll();
@@ -139,13 +177,41 @@ public class SearchEntry extends AbstractConnector {
         }
     }
 
+    /**
+     * swap the bytes 0<->3, 1<->2,4<->5,6<->7 of the objectGUID byte array,
+     * because objectGUID byte order is not big-endian
+     *
+     * @param bytes byte array needed to be swapped
+     * @return swapped byte array
+     */
+    protected byte[] swapBytes(byte[] bytes) {
+        // bytes[0] <-> bytes[3]
+        byte swap = bytes[3];
+        bytes[3] = bytes[0];
+        bytes[0] = swap;
+        // bytes[1] <-> bytes[2]
+        swap = bytes[2];
+        bytes[2] = bytes[1];
+        bytes[1] = swap;
+        // bytes[4] <-> bytes[5]
+        swap = bytes[5];
+        bytes[5] = bytes[4];
+        bytes[4] = swap;
+        // bytes[6] <-> bytes[7]
+        swap = bytes[7];
+        bytes[7] = bytes[6];
+        bytes[6] = swap;
+        return bytes;
+    }
+
     private NamingEnumeration<SearchResult> searchInUserBase(String dn, String searchFilter,
                                                              String[] returningAttributes,
-                                                             int searchScope, DirContext rootContext)
+                                                             int searchScope, DirContext rootContext, int limit)
             throws NamingException {
         String userBase = dn;
         SearchControls userSearchControl = new SearchControls();
         userSearchControl.setReturningAttributes(returningAttributes);
+        userSearchControl.setCountLimit(limit);
         userSearchControl.setSearchScope(searchScope);
         NamingEnumeration<SearchResult> userSearchResults;
         userSearchResults = rootContext.search(userBase, searchFilter, userSearchControl);

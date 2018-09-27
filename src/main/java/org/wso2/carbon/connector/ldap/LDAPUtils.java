@@ -58,6 +58,7 @@ public class LDAPUtils {
         env.put(Context.PROVIDER_URL, providerUrl);
         env.put(Context.SECURITY_PRINCIPAL, securityPrincipal);
         env.put(Context.SECURITY_CREDENTIALS, securityCredentials);
+        env.put(LDAPConstants.JAVA_NAMING_LDAP_ATTRIBUTE_BINARY, LDAPConstants.OBJECT_GUID);
         if (secureConnection) {
             env.put(Context.SECURITY_PROTOCOL, LDAPConstants.SSL);
         }

@@ -26,6 +26,8 @@ public class LDAPConstants {
     public static final String SECURITY_CREDENTIALS = "securityCredentials";
     public static final String CONNECTOR_NAMESPACE = "http://org.wso2.esbconnectors.ldap";
     public static final String OBJECT_CLASS = "objectClass";
+    public static final String OBJECT_GUID = "objectGUID";
+    public static final String LIMIT = "limit";
     public static final String ATTRIBUTES = "attributes";
     public static final String DN = "dn";
     public static final String RESULT = "result";
@@ -51,6 +53,8 @@ public class LDAPConstants {
     public static final String JAVA_NAMING_LDAP_FACTORY_SOCKET = "java.naming.ldap.factory.socket";
     public static final String ORG_WSO2_CARBON_CONNECTOR_SECURITY_MYSSLSOCKETFACTORY =
             "org.wso2.carbon.connector.security.MySSLSocketFactory";
+    public static final String JAVA_NAMING_LDAP_ATTRIBUTE_BINARY =
+            "java.naming.ldap.attributes.binary";
 
     public static final class ErrorConstants {
         public static final int SEARCH_ERROR = 7000001;
