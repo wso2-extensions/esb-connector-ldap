@@ -1,11 +1,12 @@
 # LDAP EI Connector
 
-The LDAP [Connector](https://docs.wso2.com/display/EI640/Working+with+Connectors) allows you to connect to any LDAP server through a simple web services interface and perform CRUD (Create, Read, Update, Delete) operations on LDAP entries. This connector uses the [JAVA JNDI APIs](https://directory.apache.org/api/user-guide.html) to connect to a required LDAP server.
+The LDAP [Connector](https://docs.wso2.com/display/EI650/Working+with+Connectors) allows you to connect to any LDAP server through a simple web services interface and perform CRUD (Create, Read, Update, Delete) operations on LDAP entries. This connector uses the [JAVA JNDI APIs](https://directory.apache.org/api/user-guide.html) to connect to a required LDAP server.
 
 ## Compatibility
 
 | Connector version  | Supported WSO2 ESB/EI version |
 | ------------- | ------------- |
+| [1.0.8](https://github.com/wso2-extensions/esb-connector-ldap/tree/org.wso2.carbon.connector.ldap-1.0.8) | EI 6.5.0    |
 | [1.0.7](https://github.com/wso2-extensions/esb-connector-ldap/tree/org.wso2.carbon.connector.ldap-1.0.7) | ESB 4.9.0, ESB 5.0.0, EI 6.1.1, EI 6.2.0, EI 6.3.0, EI 6.4.0    |
 | [1.0.6](https://github.com/wso2-extensions/esb-connector-ldap/tree/org.wso2.carbon.connector.ldap-1.0.6) | ESB 4.9.0, ESB 5.0.0, EI 6.1.1, EI 6.2.0    |
 | [1.0.5](https://github.com/wso2-extensions/esb-connector-ldap/tree/org.wso2.carbon.connector.ldap-1.0.5) | ESB 4.9.0, ESB 5.0.0, EI 6.1.1    |
@@ -16,9 +17,9 @@ The LDAP [Connector](https://docs.wso2.com/display/EI640/Working+with+Connectors
 #### Download and install the connector
 
 1. Download the connector from the [WSO2 Store](https://store.wso2.com/store/assets/esbconnector/details/4ecf8dde-60f3-4e91-ba22-5f49a4e302f4) by clicking the Download Connector button.
-2. Then you can follow this [Documentation](https://docs.wso2.com/display/EI640/Working+with+Connectors+via+the+Management+Console) to add and enable the connector via the Management Console in your EI instance.
-3. For more information on using connectors and their operations in your EI configurations, see [Using a Connector](https://docs.wso2.com/display/EI640/Using+a+Connector).
-4. If you want to work with connectors via EI tooling, see [Working with Connectors via Tooling](https://docs.wso2.com/display/EI640/Working+with+Connectors+via+Tooling).
+2. Then you can follow this [Documentation](https://docs.wso2.com/display/EI650/Working+with+Connectors+via+the+Management+Console) to add and enable the connector via the Management Console in your EI instance.
+3. For more information on using connectors and their operations in your EI configurations, see [Using a Connector](https://docs.wso2.com/display/EI650/Using+a+Connector).
+4. If you want to work with connectors via EI tooling, see [Working with Connectors via Tooling](https://docs.wso2.com/display/EI650/Working+with+Connectors+via+Tooling).
 
 #### Configuring the connector operations
 
