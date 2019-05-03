@@ -11,11 +11,11 @@
 
  - Mac OSX 10.9.2
  - UBUNTU 16.04
- - WSO2 EI 6.4.0
+ - WSO2 EI 6.5.0
 
  STEPS:
 
-1. Make sure the WSO2 EI 6.4.0 zip file with available at "{LDAP_HOME}/repository/"
+1. Make sure the WSO2 EI 6.5.0 zip file with available at "{LDAP_HOME}/repository/"
 
 2. Follow the below mentioned steps for adding valid certificate to access LDAP server over SSL.
 
