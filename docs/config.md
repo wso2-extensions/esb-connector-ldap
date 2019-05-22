@@ -27,6 +27,7 @@ To use the LDAP connector, add the <ldap.init> element in your configuration bef
     <securityCredentials>{$ctx:securityCredentials}</securityCredentials>
     <secureConnection>{$ctx:secureConnection}</secureConnection>
     <disableSSLCertificateChecking>{$ctx:disableSSLCertificateChecking}</disableSSLCertificateChecking>
+    <timeout>{$ctx:timeout}</timeout>
 </ldap.init>
 ```
 **Properties** 
@@ -35,6 +36,7 @@ To use the LDAP connector, add the <ldap.init> element in your configuration bef
 * securityCredentials : The password of the LDAP admin.
 * secureConnection : The boolean value for the secure connection.
 * disableSSLCertificateChecking : The boolean value to check whether certificate enable or not.
+* timeout : The read timeout in milliseconds for LDAP operations.
 
 #### Ensuring secure data
 For security purposes, you should store securityCredentials in the WSO2 secure vault and make reference to it by using an alias instead of hard-coding the actual value in the configuration file. For more information, see [Working with Passwords](https://docs.wso2.com/display/EI640/Working+with+Passwords+in+the+ESB+profile).

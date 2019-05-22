@@ -31,6 +31,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.soap.SOAPBody;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.MessageContext;
@@ -52,6 +53,7 @@ public class LDAPUtils {
                 .valueOf(LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURE_CONNECTION));
         boolean disableSSLCertificateChecking = Boolean.valueOf(LDAPUtils.lookupContextParams(
                 messageContext, LDAPConstants.DISABLE_SSL_CERT_CHECKING));
+        String timeout = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.TIMEOUT);
 
         Hashtable env = new Hashtable();
         env.put(Context.INITIAL_CONTEXT_FACTORY, LDAPConstants.COM_SUN_JNDI_LDAP_LDAPCTXFACTORY);
@@ -59,6 +61,10 @@ public class LDAPUtils {
         env.put(Context.SECURITY_PRINCIPAL, securityPrincipal);
         env.put(Context.SECURITY_CREDENTIALS, securityCredentials);
         env.put(LDAPConstants.JAVA_NAMING_LDAP_ATTRIBUTE_BINARY, LDAPConstants.OBJECT_GUID);
+
+        if(StringUtils.isNotEmpty(timeout)) {
+            env.put(LDAPConstants.COM_JAVA_JNDI_LDAP_READ_TIMEOUT, timeout);
+        }
         if (secureConnection) {
             env.put(Context.SECURITY_PROTOCOL, LDAPConstants.SSL);
         }
