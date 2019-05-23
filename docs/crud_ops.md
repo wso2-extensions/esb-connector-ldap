@@ -262,12 +262,14 @@ Following example illustrates how to connect to LDAP with the init operation and
          <property name="securityCredentials" expression="json-eval($.securityCredentials)" />
          <property name="secureConnection" expression="json-eval($.secureConnection)" />
          <property name="disableSSLCertificateChecking" expression="json-eval($.disableSSLCertificateChecking)" />
+         <property name="timeout" expression="json-eval($.timeout)" />
          <ldap.init>
             <providerUrl>{get-property('providerUrl')}</providerUrl>
             <securityPrincipal>{get-property('securityPrincipal')}</securityPrincipal>
             <securityCredentials>{get-property('securityCredentials')}</securityCredentials>
             <secureConnection>{get-property('secureConnection')}</secureConnection>
             <disableSSLCertificateChecking>{get-property('disableSSLCertificateChecking')}</disableSSLCertificateChecking>
+            <timeout>{get-property('timeout')}</timeout>
          </ldap.init>
          <ldap.addEntry>
             <objectClass>{get-property('objectClass')}</objectClass>

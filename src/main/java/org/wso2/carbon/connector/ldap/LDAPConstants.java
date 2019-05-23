@@ -55,6 +55,8 @@ public class LDAPConstants {
             "org.wso2.carbon.connector.security.MySSLSocketFactory";
     public static final String JAVA_NAMING_LDAP_ATTRIBUTE_BINARY =
             "java.naming.ldap.attributes.binary";
+    public static final String COM_JAVA_JNDI_LDAP_READ_TIMEOUT = "com.sun.jndi.ldap.read.timeout";
+    public static final String TIMEOUT = "timeout";
 
     public static final class ErrorConstants {
         public static final int SEARCH_ERROR = 7000001;

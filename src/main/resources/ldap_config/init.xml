@@ -24,6 +24,8 @@
     <parameter name="securityPrincipal" description="Username of the user used to log in to LDAP."/>
     <parameter name="securityCredentials"
                description="Password of the user used to log in to LDAP."/>
+    <parameter name="timeout" description="Timeout duration of the LDAP request."/>
+
     <sequence>
         <property expression="$func:secureConnection" name="secureConnection" scope="default"
                   type="STRING"/>
@@ -38,7 +40,7 @@
         <property
                 expression="$func:securityCredentials" name="securityCredentials"
                 scope="default" type="STRING"/>
-
+        <property name="timeout" expression="$func:timeout"/>
         <class name="org.wso2.carbon.connector.ldap.Init"/>
     </sequence>
 </template>
