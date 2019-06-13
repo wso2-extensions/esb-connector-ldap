@@ -81,14 +81,16 @@ public class LDAPUtils {
                     LDAPConstants.ORG_WSO2_CARBON_CONNECTOR_SECURITY_MYSSLSOCKETFACTORY);
         }
         env.put(LDAPConstants.COM_SUN_JNDI_LDAP_CONNECT_POOL, String.valueOf(connectionPoolingEnabled));
-        if (StringUtils.isNotEmpty(connectionPoolingProtocol)) {
-            env.put(LDAPConstants.COM_SUN_JNDI_LDAP_CONNECT_POOL_PROTOCOL, connectionPoolingProtocol);
-        }
-        if (StringUtils.isNotEmpty(connectionPoolingInitSize)) {
-            env.put(LDAPConstants.COM_SUN_JNDI_LDAP_CONNECT_POOL_INITSIZE, connectionPoolingInitSize);
-        }
-        if (StringUtils.isNotEmpty(connectionPoolingMaxSize)) {
-            env.put(LDAPConstants.COM_SUN_JNDI_LDAP_CONNECT_POOL_MAXSIZE, connectionPoolingMaxSize);
+        if (connectionPoolingEnabled) {
+            if (StringUtils.isNotEmpty(connectionPoolingProtocol)) {
+                env.put(LDAPConstants.COM_SUN_JNDI_LDAP_CONNECT_POOL_PROTOCOL, connectionPoolingProtocol);
+            }
+            if (StringUtils.isNotEmpty(connectionPoolingInitSize)) {
+                env.put(LDAPConstants.COM_SUN_JNDI_LDAP_CONNECT_POOL_INITSIZE, connectionPoolingInitSize);
+            }
+            if (StringUtils.isNotEmpty(connectionPoolingMaxSize)) {
+                env.put(LDAPConstants.COM_SUN_JNDI_LDAP_CONNECT_POOL_MAXSIZE, connectionPoolingMaxSize);
+            }
         }
 
         DirContext ctx = null;
