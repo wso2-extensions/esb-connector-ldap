@@ -54,6 +54,14 @@ public class LDAPUtils {
         boolean disableSSLCertificateChecking = Boolean.valueOf(LDAPUtils.lookupContextParams(
                 messageContext, LDAPConstants.DISABLE_SSL_CERT_CHECKING));
         String timeout = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.TIMEOUT);
+        boolean connectionPoolingEnabled = Boolean
+                .valueOf(LDAPUtils.lookupContextParams(messageContext, LDAPConstants.CONNECTION_POOLING_ENABLED));
+        String connectionPoolingProtocol = LDAPUtils
+                .lookupContextParams(messageContext, LDAPConstants.CONNECTION_POOLING_PROTOCOL);
+        String connectionPoolingInitSize = LDAPUtils
+                .lookupContextParams(messageContext, LDAPConstants.CONNECTION_POOLING_INIT_SIZE);
+        String connectionPoolingMaxSize = LDAPUtils
+                .lookupContextParams(messageContext, LDAPConstants.CONNECTION_POOLING_MAX_SIZE);
 
         Hashtable env = new Hashtable();
         env.put(Context.INITIAL_CONTEXT_FACTORY, LDAPConstants.COM_SUN_JNDI_LDAP_LDAPCTXFACTORY);
@@ -72,6 +80,16 @@ public class LDAPUtils {
             env.put(LDAPConstants.JAVA_NAMING_LDAP_FACTORY_SOCKET,
                     LDAPConstants.ORG_WSO2_CARBON_CONNECTOR_SECURITY_MYSSLSOCKETFACTORY);
         }
+        env.put(LDAPConstants.COM_SUN_JNDI_LDAP_CONNECT_POOL, String.valueOf(connectionPoolingEnabled));
+        if (StringUtils.isNotEmpty(connectionPoolingProtocol)) {
+            env.put(LDAPConstants.COM_SUN_JNDI_LDAP_CONNECT_POOL_PROTOCOL, connectionPoolingProtocol);
+        }
+        if (StringUtils.isNotEmpty(connectionPoolingInitSize)) {
+            env.put(LDAPConstants.COM_SUN_JNDI_LDAP_CONNECT_POOL_INITSIZE, connectionPoolingInitSize);
+        }
+        if (StringUtils.isNotEmpty(connectionPoolingMaxSize)) {
+            env.put(LDAPConstants.COM_SUN_JNDI_LDAP_CONNECT_POOL_MAXSIZE, connectionPoolingMaxSize);
+        }
 
         DirContext ctx = null;
         ctx = new InitialDirContext(env);
@@ -87,6 +105,14 @@ public class LDAPUtils {
         ctxt.setProperty(LDAPConstants.PROVIDER_URL, url);
         ctxt.setProperty(LDAPConstants.SECURITY_PRINCIPAL, principal);
         ctxt.setProperty(LDAPConstants.SECURITY_CREDENTIALS, password);
+    }
+
+    public static void setConnectionPoolingParameters(MessageContext ctxt, String poolingEnabled, String protocol,
+            String initSize, String maxSize) {
+        ctxt.setProperty(LDAPConstants.CONNECTION_POOLING_ENABLED, poolingEnabled);
+        ctxt.setProperty(LDAPConstants.CONNECTION_POOLING_PROTOCOL, protocol);
+        ctxt.setProperty(LDAPConstants.CONNECTION_POOLING_INIT_SIZE, initSize);
+        ctxt.setProperty(LDAPConstants.CONNECTION_POOLING_MAX_SIZE, maxSize);
     }
 
     public static void preparePayload(MessageContext messageContext, OMElement element) {

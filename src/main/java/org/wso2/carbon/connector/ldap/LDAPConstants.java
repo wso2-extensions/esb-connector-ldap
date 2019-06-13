@@ -55,6 +55,14 @@ public class LDAPConstants {
             "org.wso2.carbon.connector.security.MySSLSocketFactory";
     public static final String JAVA_NAMING_LDAP_ATTRIBUTE_BINARY =
             "java.naming.ldap.attributes.binary";
+    public static final String COM_SUN_JNDI_LDAP_CONNECT_POOL = "com.sun.jndi.ldap.connect.pool";
+    public static final String COM_SUN_JNDI_LDAP_CONNECT_POOL_PROTOCOL = "com.sun.jndi.ldap.connect.pool.protocol";
+    public static final String COM_SUN_JNDI_LDAP_CONNECT_POOL_INITSIZE = "com.sun.jndi.ldap.connect.pool.initsize";
+    public static final String COM_SUN_JNDI_LDAP_CONNECT_POOL_MAXSIZE = "com.sun.jndi.ldap.connect.pool.maxsize";
+    public static final String CONNECTION_POOLING_ENABLED = "connectionPoolingEnabled";
+    public static final String CONNECTION_POOLING_PROTOCOL = "connectionPoolingProtocol";
+    public static final String CONNECTION_POOLING_INIT_SIZE = "connectionPoolingInitSize";
+    public static final String CONNECTION_POOLING_MAX_SIZE = "connectionPoolingMaxSize";
     public static final String COM_JAVA_JNDI_LDAP_READ_TIMEOUT = "com.sun.jndi.ldap.read.timeout";
     public static final String TIMEOUT = "timeout";
 
