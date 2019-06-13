@@ -25,6 +25,13 @@
     <parameter name="securityCredentials"
                description="Password of the user used to log in to LDAP."/>
     <parameter name="timeout" description="Timeout duration of the LDAP request."/>
+    <parameter name="connectionPoolingEnabled" description="Property to enable/disable connection pooling."/>
+    <parameter name="connectionPoolingProtocol"
+               description="A list of space-separated protocol types of connections that may be pooled. Valid types are 'plain' and 'ssl'"/>
+    <parameter name="connectionPoolingInitSize"
+               description="The string representation of an integer that represents the number of connections per connection identity to create when initially creating a connection for the identity."/>
+    <parameter name="connectionPoolingMaxSize"
+               description="The string representation of an integer that represents the maximum number of connections per connection identity that can be maintained concurrently."/>
 
     <sequence>
         <property expression="$func:secureConnection" name="secureConnection" scope="default"
@@ -41,6 +48,18 @@
                 expression="$func:securityCredentials" name="securityCredentials"
                 scope="default" type="STRING"/>
         <property name="timeout" expression="$func:timeout"/>
+        <property
+                expression="$func:connectionPoolingEnabled" name="connectionPoolingEnabled"
+                scope="default" type="STRING"/>
+        <property
+                expression="$func:connectionPoolingProtocol" name="connectionPoolingProtocol"
+                scope="default" type="STRING"/>
+        <property
+                expression="$func:connectionPoolingInitSize" name="connectionPoolingInitSize"
+                scope="default" type="STRING"/>
+        <property
+                expression="$func:connectionPoolingMaxSize" name="connectionPoolingMaxSize"
+                scope="default" type="STRING"/>
         <class name="org.wso2.carbon.connector.ldap.Init"/>
     </sequence>
 </template>
