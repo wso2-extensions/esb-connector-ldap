@@ -28,6 +28,11 @@ To use the LDAP connector, add the <ldap.init> element in your configuration bef
     <secureConnection>{$ctx:secureConnection}</secureConnection>
     <disableSSLCertificateChecking>{$ctx:disableSSLCertificateChecking}</disableSSLCertificateChecking>
     <timeout>{$ctx:timeout}</timeout>
+    <!-- connection pooling parameters. These are optional -->
+    <connectionPoolingEnabled>{$ctx:connectionPoolingEnabled}</connectionPoolingEnabled>
+    <connectionPoolingProtocol>{$ctx:connectionPoolingProtocol}</connectionPoolingProtocol>
+    <connectionPoolingInitSize>{$ctx:connectionPoolingInitSize}</connectionPoolingInitSize>
+    <connectionPoolingMaxSize>{$ctx:connectionPoolingMaxSize}</connectionPoolingMaxSize>
 </ldap.init>
 ```
 **Properties** 
@@ -37,6 +42,10 @@ To use the LDAP connector, add the <ldap.init> element in your configuration bef
 * secureConnection : The boolean value for the secure connection.
 * disableSSLCertificateChecking : The boolean value to check whether certificate enable or not.
 * timeout : The read timeout in milliseconds for LDAP operations.
+* connectionPoolingEnabled : The boolean value to enable/disable connection pooling. This is a optional parameter that is used when enabling connection pooling.
+* connectionPoolingProtocol : A list of space-separated protocol types of connections that may be pooled. Valid types are 'plain' and 'ssl'. This is a optional parameter.
+* connectionPoolingInitSize : The string representation of an integer that represents the number of connections per connection identity to create when initially creating a connection for the identity. This is a optional parameter.
+* connectionPoolingMaxSize : The string representation of an integer that represents the maximum number of connections per connection identity that can be maintained concurrently. This is a optional parameter.
 
 #### Ensuring secure data
 For security purposes, you should store securityCredentials in the WSO2 secure vault and make reference to it by using an alias instead of hard-coding the actual value in the configuration file. For more information, see [Working with Passwords](https://docs.wso2.com/display/EI640/Working+with+Passwords+in+the+ESB+profile).
