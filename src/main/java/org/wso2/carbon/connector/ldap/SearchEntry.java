@@ -104,7 +104,9 @@ public class SearchEntry extends AbstractConnector {
                         }
                     } else {
 
-                        throw new NamingException("No matching result or entity found for this search");
+                        //throw new NamingException("No matching result or entity found for this search");
+                        //LDAPUtils.preparePayload(messageContext, "No matching result or entity found for this search", LDAPConstants.RESULT_NOT_FOUND_ERROR_CODE);
+                        log.info("No matching result or entity found for this search - "+ "7000010");
                     }
                 } else {
                     entityResult = makeSureOnlyOneMatch(results);
