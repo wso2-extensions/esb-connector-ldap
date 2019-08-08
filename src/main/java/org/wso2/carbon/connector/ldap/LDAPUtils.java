@@ -31,7 +31,6 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.soap.SOAPBody;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.MessageContext;
@@ -53,15 +52,6 @@ public class LDAPUtils {
                 .valueOf(LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURE_CONNECTION));
         boolean disableSSLCertificateChecking = Boolean.valueOf(LDAPUtils.lookupContextParams(
                 messageContext, LDAPConstants.DISABLE_SSL_CERT_CHECKING));
-        String timeout = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.TIMEOUT);
-        boolean connectionPoolingEnabled = Boolean
-                .valueOf(LDAPUtils.lookupContextParams(messageContext, LDAPConstants.CONNECTION_POOLING_ENABLED));
-        String connectionPoolingProtocol = LDAPUtils
-                .lookupContextParams(messageContext, LDAPConstants.CONNECTION_POOLING_PROTOCOL);
-        String connectionPoolingInitSize = LDAPUtils
-                .lookupContextParams(messageContext, LDAPConstants.CONNECTION_POOLING_INIT_SIZE);
-        String connectionPoolingMaxSize = LDAPUtils
-                .lookupContextParams(messageContext, LDAPConstants.CONNECTION_POOLING_MAX_SIZE);
 
         Hashtable env = new Hashtable();
         env.put(Context.INITIAL_CONTEXT_FACTORY, LDAPConstants.COM_SUN_JNDI_LDAP_LDAPCTXFACTORY);
@@ -69,28 +59,12 @@ public class LDAPUtils {
         env.put(Context.SECURITY_PRINCIPAL, securityPrincipal);
         env.put(Context.SECURITY_CREDENTIALS, securityCredentials);
         env.put(LDAPConstants.JAVA_NAMING_LDAP_ATTRIBUTE_BINARY, LDAPConstants.OBJECT_GUID);
-
-        if(StringUtils.isNotEmpty(timeout)) {
-            env.put(LDAPConstants.COM_JAVA_JNDI_LDAP_READ_TIMEOUT, timeout);
-        }
         if (secureConnection) {
             env.put(Context.SECURITY_PROTOCOL, LDAPConstants.SSL);
         }
         if (disableSSLCertificateChecking) {
             env.put(LDAPConstants.JAVA_NAMING_LDAP_FACTORY_SOCKET,
                     LDAPConstants.ORG_WSO2_CARBON_CONNECTOR_SECURITY_MYSSLSOCKETFACTORY);
-        }
-        env.put(LDAPConstants.COM_SUN_JNDI_LDAP_CONNECT_POOL, String.valueOf(connectionPoolingEnabled));
-        if (connectionPoolingEnabled) {
-            if (StringUtils.isNotEmpty(connectionPoolingProtocol)) {
-                env.put(LDAPConstants.COM_SUN_JNDI_LDAP_CONNECT_POOL_PROTOCOL, connectionPoolingProtocol);
-            }
-            if (StringUtils.isNotEmpty(connectionPoolingInitSize)) {
-                env.put(LDAPConstants.COM_SUN_JNDI_LDAP_CONNECT_POOL_INITSIZE, connectionPoolingInitSize);
-            }
-            if (StringUtils.isNotEmpty(connectionPoolingMaxSize)) {
-                env.put(LDAPConstants.COM_SUN_JNDI_LDAP_CONNECT_POOL_MAXSIZE, connectionPoolingMaxSize);
-            }
         }
 
         DirContext ctx = null;
@@ -107,14 +81,6 @@ public class LDAPUtils {
         ctxt.setProperty(LDAPConstants.PROVIDER_URL, url);
         ctxt.setProperty(LDAPConstants.SECURITY_PRINCIPAL, principal);
         ctxt.setProperty(LDAPConstants.SECURITY_CREDENTIALS, password);
-    }
-
-    public static void setConnectionPoolingParameters(MessageContext ctxt, String poolingEnabled, String protocol,
-            String initSize, String maxSize) {
-        ctxt.setProperty(LDAPConstants.CONNECTION_POOLING_ENABLED, poolingEnabled);
-        ctxt.setProperty(LDAPConstants.CONNECTION_POOLING_PROTOCOL, protocol);
-        ctxt.setProperty(LDAPConstants.CONNECTION_POOLING_INIT_SIZE, initSize);
-        ctxt.setProperty(LDAPConstants.CONNECTION_POOLING_MAX_SIZE, maxSize);
     }
 
     public static void preparePayload(MessageContext messageContext, OMElement element) {
@@ -137,6 +103,18 @@ public class LDAPUtils {
         preparePayload(messageContext, omElement);
     }
 
+    public static void preparePayload(MessageContext messageContext, String msg, int errorCode) {
+        OMElement omElement = fac.createOMElement(LDAPConstants.ERROR, ns);
+        OMElement message = fac.createOMElement(LDAPConstants.ERROR_MESSAGE, ns);
+        OMElement code = fac.createOMElement(LDAPConstants.ERROR_CODE, ns);
+        message.addChild(fac.createOMText(omElement, msg));
+        code.addChild(fac.createOMText(omElement, errorCode + ""));
+        omElement.addChild(message);
+        omElement.addChild(code);
+        preparePayload(messageContext, omElement);
+    }
+
+
     public static void handleErrorResponse(MessageContext messageContext, int errorCode,
                                            Exception e) {
         org.apache.axis2.context.MessageContext axis2MessageContext =
@@ -148,5 +126,6 @@ public class LDAPUtils {
         messageContext.setProperty(SynapseConstants.ERROR_EXCEPTION, e);
         messageContext.setFaultResponse(true);
         preparePayload(messageContext, e, errorCode);
+        log.error(":::::::::: Exception"+e);
     }
 }

@@ -41,6 +41,7 @@ public class LDAPConstants {
     public static final String ERROR = "error";
     public static final String ERROR_MESSAGE = "errorMessage";
     public static final String ERROR_CODE = "errorCode";
+    public static final Integer RESULT_NOT_FOUND_ERROR_CODE = 7000010;
     public static final String ONLY_ONE_REFERENCE = "onlyOneReference";
     public static final String FILTERS = "filters";
     public static final String ENTRY = "entry";
@@ -55,16 +56,6 @@ public class LDAPConstants {
             "org.wso2.carbon.connector.security.MySSLSocketFactory";
     public static final String JAVA_NAMING_LDAP_ATTRIBUTE_BINARY =
             "java.naming.ldap.attributes.binary";
-    public static final String COM_SUN_JNDI_LDAP_CONNECT_POOL = "com.sun.jndi.ldap.connect.pool";
-    public static final String COM_SUN_JNDI_LDAP_CONNECT_POOL_PROTOCOL = "com.sun.jndi.ldap.connect.pool.protocol";
-    public static final String COM_SUN_JNDI_LDAP_CONNECT_POOL_INITSIZE = "com.sun.jndi.ldap.connect.pool.initsize";
-    public static final String COM_SUN_JNDI_LDAP_CONNECT_POOL_MAXSIZE = "com.sun.jndi.ldap.connect.pool.maxsize";
-    public static final String CONNECTION_POOLING_ENABLED = "connectionPoolingEnabled";
-    public static final String CONNECTION_POOLING_PROTOCOL = "connectionPoolingProtocol";
-    public static final String CONNECTION_POOLING_INIT_SIZE = "connectionPoolingInitSize";
-    public static final String CONNECTION_POOLING_MAX_SIZE = "connectionPoolingMaxSize";
-    public static final String COM_JAVA_JNDI_LDAP_READ_TIMEOUT = "com.sun.jndi.ldap.read.timeout";
-    public static final String TIMEOUT = "timeout";
 
     public static final class ErrorConstants {
         public static final int SEARCH_ERROR = 7000001;

@@ -67,11 +67,12 @@ public class SearchEntry extends AbstractConnector {
                 (String) getParameter(messageContext, LDAPConstants.ONLY_ONE_REFERENCE));
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE,
-                LDAPConstants.NAMESPACE);
+                                                   LDAPConstants.NAMESPACE);
         OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
         try {
+            log.info("::::: Getting Directory Context");
             DirContext context = LDAPUtils.getDirectoryContext(messageContext);
-
+            log.info("::::: context obtained successfully");
             String attrFilter = generateAttrFilter(filter, messageContext);
             String searchFilter = generateSearchFilter(objectClass, attrFilter);
             try {
@@ -104,26 +105,31 @@ public class SearchEntry extends AbstractConnector {
                         }
                     } else {
 
-                        throw new NamingException("No matching result or entity found for this search");
+                        //throw new NamingException("No matching result or entity found for this search");
+                        //LDAPUtils.preparePayload(messageContext, "No matching result or entity found for this search", LDAPConstants.RESULT_NOT_FOUND_ERROR_CODE);
+                        log.info("No matching result or entity found for this search - "+ LDAPConstants.RESULT_NOT_FOUND_ERROR_CODE);
                     }
                 } else {
                     entityResult = makeSureOnlyOneMatch(results);
                     if (entityResult == null) {
                         throw new NamingException("Multiple objects for the searched target have been found. Try to " +
-                                "change onlyOneReference option");
+                                                          "change onlyOneReference option");
                     } else {
                         result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
                     }
                 }
+                log.info("::::::::: Result = "+result);
                 LDAPUtils.preparePayload(messageContext, result);
                 if (context != null) {
                     context.close();
                 }
             } catch (NamingException e) { //LDAP Errors are catched
+                log.error("LDAP Errors are catched - ",e);
                 LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.SEARCH_ERROR, e);
                 throw new SynapseException(e);
             }
         } catch (NamingException e) { //Authentication failures are catched
+            log.error("Authentication failures are catched - ",e);
             LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
             throw new SynapseException(e);
         }
@@ -231,6 +237,7 @@ public class SearchEntry extends AbstractConnector {
                 attrFilter += ")";
             }
         } catch (JSONException e) {
+            log.error("Error while passing the JSON object - "+ e);
             handleException("Error while passing the JSON object", e, messageContext);
         }
         return attrFilter;

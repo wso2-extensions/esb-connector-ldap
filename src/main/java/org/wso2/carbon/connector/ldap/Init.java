@@ -30,16 +30,5 @@ public class Init extends AbstractConnector {
         String securityPrincipal = (String) getParameter(messageContext, LDAPConstants.SECURITY_PRINCIPAL);
         String securityCredentials = (String) getParameter(messageContext, LDAPConstants.SECURITY_CREDENTIALS);
         LDAPUtils.storeAdminLoginDatails(messageContext, providerUrl, securityPrincipal, securityCredentials);
-        //connection pooling parameters
-        String connectionPoolingEnabled = (String) getParameter(messageContext,
-                LDAPConstants.CONNECTION_POOLING_ENABLED);
-        String connectionPoolingProtocol = (String) getParameter(messageContext,
-                LDAPConstants.CONNECTION_POOLING_PROTOCOL);
-        String connectionPoolingInitSize = (String) getParameter(messageContext,
-                LDAPConstants.CONNECTION_POOLING_INIT_SIZE);
-        String connectionPoolingMaxSize = (String) getParameter(messageContext,
-                LDAPConstants.CONNECTION_POOLING_MAX_SIZE);
-        LDAPUtils.setConnectionPoolingParameters(messageContext, connectionPoolingEnabled, connectionPoolingProtocol,
-                connectionPoolingInitSize, connectionPoolingMaxSize);
     }
 }
