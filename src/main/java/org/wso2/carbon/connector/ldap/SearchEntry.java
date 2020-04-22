@@ -38,7 +38,6 @@ import org.apache.synapse.SynapseException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.connector.core.ConnectException;
 
 import java.nio.ByteBuffer;
 import java.util.Iterator;
@@ -47,11 +46,14 @@ public class SearchEntry extends AbstractConnector {
     protected static Log log = LogFactory.getLog(SearchEntry.class);
 
     @Override
-    public void connect(MessageContext messageContext) throws ConnectException {
-        String objectClass = (String) getParameter(messageContext, LDAPConstants.OBJECT_CLASS);
+    public void connect(MessageContext messageContext) {
         String filter = (String) getParameter(messageContext, LDAPConstants.FILTERS);
         String dn = (String) getParameter(messageContext, LDAPConstants.DN);
-        String returnAttributes[] = ((String) getParameter(messageContext, LDAPConstants.ATTRIBUTES)).split(",");
+        String returnAttributes[] = {};
+        String returnAttributesValue = (String) getParameter(messageContext, LDAPConstants.ATTRIBUTES);
+        if (!(returnAttributesValue == null || returnAttributesValue.isEmpty())) {
+            returnAttributes = returnAttributesValue.split(",");
+        }
 
         int limit = 0;
         String searchLimit = (String) getParameter(messageContext, LDAPConstants.LIMIT);
@@ -71,9 +73,7 @@ public class SearchEntry extends AbstractConnector {
         OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
         try {
             DirContext context = LDAPUtils.getDirectoryContext(messageContext);
-
-            String attrFilter = generateAttrFilter(filter, messageContext);
-            String searchFilter = generateSearchFilter(objectClass, attrFilter);
+            String searchFilter = generateSearchFilter(filter, messageContext);
             try {
                 NamingEnumeration<SearchResult> results = searchInUserBase(
                         dn, searchFilter, returnAttributes, SearchControls.SUBTREE_SCOPE, context, limit);
@@ -137,23 +137,53 @@ public class SearchEntry extends AbstractConnector {
         OMElement dnattr = factory.createOMElement(LDAPConstants.DN, ns);
         dnattr.setText(entityResult.getNameInNamespace());
         entry.addChild(dnattr);
-
-        for (int i = 0; i < returnAttributes.length; i++) {
-            attribute = attributes.get(returnAttributes[i]);
-
-            // Remove ";" from returnAttribute elements to prevent invalid xml generation
-            if (returnAttributes[i].contains(";")) {
-                String[] splitResult = returnAttributes[i].split("(?=;)");
-                returnAttributes[i] = splitResult[0];
-            }
-            if (attribute != null) {
-                NamingEnumeration ne = null;
-                ne = attribute.getAll();
+        if (returnAttributes.length == 0) {
+            NamingEnumeration<String> ids = attributes.getIDs();
+            while (ids.hasMore()) {
+                String id = ids.next();
+                Attribute attr = attributes.get(id);
+                NamingEnumeration ne = attr.getAll();
                 while (ne.hasMoreElements()) {
-                    String value = (String) ne.next();
-                    OMElement attr = factory.createOMElement(returnAttributes[i], ns);
-                    attr.setText(value);
-                    entry.addChild(attr);
+                    Object element = ne.next();
+                    String elementType = element.getClass().toString();
+                    String value = "";
+                    if (elementType.equals("class java.lang.String")) {
+                        value = element.toString();
+                    } else if(elementType.equals("class [B")) {
+                        Attribute attributeValue = attributes.get(id);
+                        value = new String((byte[]) attributeValue.get());
+                    }
+                    OMElement omElement = factory.createOMElement(id, ns);
+                    omElement.setText(value);
+                    entry.addChild(omElement);
+                }
+            }
+        } else {
+            for (int i = 0; i < returnAttributes.length; i++) {
+                attribute = attributes.get(returnAttributes[i]);
+
+                // Remove ";" from returnAttribute elements to prevent invalid xml generation
+                if (returnAttributes[i].contains(";")) {
+                    String[] splitResult = returnAttributes[i].split("(?=;)");
+                    returnAttributes[i] = splitResult[0];
+                }
+                if (attribute != null) {
+                    NamingEnumeration ne = null;
+                    ne = attribute.getAll();
+                    while (ne.hasMoreElements()) {
+                        Object element = ne.next();
+                        String elementType = element.getClass().toString();
+                        String value = "";
+                        if (elementType.equals("class java.lang.String")) {
+                            value = (String) element.toString();
+                        } else if(elementType.equals("class [B")) {
+                            Attribute attributeValue = attributes.get(returnAttributes[i]);
+                            value = new String((byte[]) attributeValue.get());
+                        }
+                        OMElement attr = factory.createOMElement(returnAttributes[i], ns);
+                        attr.setText(value);
+                        entry.addChild(attr);
+                    }
                 }
             }
         }
@@ -210,7 +240,9 @@ public class SearchEntry extends AbstractConnector {
             throws NamingException {
         String userBase = dn;
         SearchControls userSearchControl = new SearchControls();
-        userSearchControl.setReturningAttributes(returningAttributes);
+        if (returningAttributes.length > 0) {
+            userSearchControl.setReturningAttributes(returningAttributes);
+        }
         userSearchControl.setCountLimit(limit);
         userSearchControl.setSearchScope(searchScope);
         NamingEnumeration<SearchResult> userSearchResults;
@@ -219,7 +251,7 @@ public class SearchEntry extends AbstractConnector {
 
     }
 
-    private String generateAttrFilter(String filter, MessageContext messageContext) {
+    private String generateSearchFilter(String filter, MessageContext messageContext) {
         String attrFilter = "";
         try {
             JSONObject object = new JSONObject(filter);
@@ -234,9 +266,5 @@ public class SearchEntry extends AbstractConnector {
             handleException("Error while passing the JSON object", e, messageContext);
         }
         return attrFilter;
-    }
-
-    private String generateSearchFilter(String objectClass, String attrFilter) {
-        return "(&(objectClass=" + objectClass + ")" + attrFilter + ")";
     }
 }
