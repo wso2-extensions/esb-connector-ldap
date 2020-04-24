@@ -47,6 +47,7 @@ public class SearchEntry extends AbstractConnector {
 
     @Override
     public void connect(MessageContext messageContext) {
+        String objectClass = (String) getParameter(messageContext, LDAPConstants.OBJECT_CLASS);
         String filter = (String) getParameter(messageContext, LDAPConstants.FILTERS);
         String dn = (String) getParameter(messageContext, LDAPConstants.DN);
         String returnAttributes[] = {};
@@ -54,7 +55,8 @@ public class SearchEntry extends AbstractConnector {
         if (!(returnAttributesValue == null || returnAttributesValue.isEmpty())) {
             returnAttributes = returnAttributesValue.split(",");
         }
-
+        String scope = (String) getParameter(messageContext, LDAPConstants.SCOPE);
+        int searchScope = getSearchScope(scope);
         int limit = 0;
         String searchLimit = (String) getParameter(messageContext, LDAPConstants.LIMIT);
         if (!StringUtils.isEmpty(searchLimit)) {
@@ -73,10 +75,10 @@ public class SearchEntry extends AbstractConnector {
         OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
         try {
             DirContext context = LDAPUtils.getDirectoryContext(messageContext);
-            String searchFilter = generateSearchFilter(filter, messageContext);
+            String searchFilter = generateSearchFilter(objectClass, filter, messageContext);
             try {
-                NamingEnumeration<SearchResult> results = searchInUserBase(
-                        dn, searchFilter, returnAttributes, SearchControls.SUBTREE_SCOPE, context, limit);
+                NamingEnumeration<SearchResult> results = searchInUserBase(dn, searchFilter, returnAttributes,
+                                                                           searchScope, context, limit);
                 SearchResult entityResult;
                 if (!onlyOneReference) {
                     if (results != null && results.hasMore()) {
@@ -149,7 +151,7 @@ public class SearchEntry extends AbstractConnector {
                     String value = "";
                     if (elementType.equals("class java.lang.String")) {
                         value = element.toString();
-                    } else if(elementType.equals("class [B")) {
+                    } else if (elementType.equals("class [B")) {
                         Attribute attributeValue = attributes.get(id);
                         value = new String((byte[]) attributeValue.get());
                     }
@@ -168,8 +170,7 @@ public class SearchEntry extends AbstractConnector {
                     returnAttributes[i] = splitResult[0];
                 }
                 if (attribute != null) {
-                    NamingEnumeration ne = null;
-                    ne = attribute.getAll();
+                    NamingEnumeration ne = attribute.getAll();
                     while (ne.hasMoreElements()) {
                         Object element = ne.next();
                         String elementType = element.getClass().toString();
@@ -251,7 +252,7 @@ public class SearchEntry extends AbstractConnector {
 
     }
 
-    private String generateSearchFilter(String filter, MessageContext messageContext) {
+    private String generateSearchFilter(String objectClass, String filter, MessageContext messageContext) {
         String attrFilter = "";
         try {
             JSONObject object = new JSONObject(filter);
@@ -265,6 +266,22 @@ public class SearchEntry extends AbstractConnector {
         } catch (JSONException e) {
             handleException("Error while passing the JSON object", e, messageContext);
         }
-        return attrFilter;
+        if (objectClass != null && !objectClass.isEmpty()) {
+            return "(&(objectClass=" + objectClass + ")" + attrFilter + ")";
+        } else {
+            return attrFilter;
+        }
+    }
+
+    private int getSearchScope(String scope) {
+        int searchScope = 2;
+        if(scope != null && !scope.isEmpty()) {
+            if (scope.equalsIgnoreCase("OBJECT")) {
+                searchScope = 0;
+            } else if (scope.equalsIgnoreCase("ONE_LEVEL")) {
+                searchScope = 1;
+            }
+        }
+        return searchScope;
     }
 }
