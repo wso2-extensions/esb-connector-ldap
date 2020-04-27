@@ -30,6 +30,7 @@ public class LDAPConstants {
     public static final String LIMIT = "limit";
     public static final String ATTRIBUTES = "attributes";
     public static final String DN = "dn";
+    public static final String SCOPE = "scope";
     public static final String RESULT = "result";
     public static final String MESSAGE = "message";
     public static final String SUCCESS = "Success";

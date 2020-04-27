@@ -21,6 +21,7 @@
                description="Boolean value whether to guarantee or not only one reference."/>
     <parameter name="objectClass" description="The object class of the entry you need to search."/>
     <parameter name="limit" description="Sets the limit for search results"/>
+    <parameter name="scope" description="The scope"/>
     <parameter name="filters"
                description="The keywords to use in the search. The keywords should be specified as
                comma separated key-value pairs."/>
