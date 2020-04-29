@@ -97,6 +97,7 @@ The searchEntry operation performs a search for one or more LDAP entities based 
   ```
 * dn : The distinguished name of the entry you need to search.
 * attributes : The attributes of the LDAP entry that should be included in the search result. 
+* scope : LDAP search scope to retrieve results. By default `SUBTREE` scope is set. Provide `OBJECT` to set scope to object level and `ONE_LEVEL` to set one level scope.
 * onlyOneReference : Boolean value whether to guarantee or not only one reference.
 * limit : This allows you to set a limit on the number of search results. If this property is not defined the maximum no of search results will be returned.
 
