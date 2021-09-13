@@ -1,6 +1,6 @@
 # Configuring LDAP Operations
 
-[[Prerequisites]](#Prerequisites) [[Initializing the Connector]](#initializing-the-connector)
+[[Prerequisites]](#prerequisites) [[Initializing the Connector]](#initializing-the-connector)
 
 ## Prerequisites
 
@@ -19,7 +19,9 @@ You can follow the following steps to import your LDAP certificate into wso2esb 
 ## Initializing the Connector
 
 To use the LDAP connector, add the <ldap.init> element in your configuration before performing any other operation. This LDAP configuration authenticates with the LDAP server in order to gain access to perform various LDAP operations.
+
 **init**
+
 ```xml
 <ldap.init>
     <providerUrl>{$ctx:providerUrl}</providerUrl>
