@@ -54,10 +54,10 @@ To use the LDAP connector, add the <ldap.init> element in your configuration bef
 In case anonymous bind is accepted by LDAP server configuration, `securityPrincipal` can be omited to initiate the connection with LDAP server without authentication.
 `securityCredentials` parameter is ignored when `securityPrincipal` is not set.
 
-#### Ensuring secure data
+### Ensuring secure data
 For security purposes, you should store securityCredentials in the WSO2 secure vault and make reference to it by using an alias instead of hard-coding the actual value in the configuration file. For more information, see [Working with Passwords](https://docs.wso2.com/display/EI640/Working+with+Passwords+in+the+ESB+profile).
 
-#### Re-using LDAP configurations
+### Re-using LDAP configurations
 For best results, save the LDAP configuration as a local entry. You can then easily reference it with the configKey attribute in your LDAP operations. For example, if you saved the above <ldap.init> entry as a local entry named ldapConfig,  you could reference it from the deleteEntry operation as follows:
 
 ```xml
