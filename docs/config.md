@@ -47,6 +47,11 @@ To use the LDAP connector, add the <ldap.init> element in your configuration bef
 * connectionPoolingInitSize : The string representation of an integer that represents the number of connections per connection identity to create when initially creating a connection for the identity. This is a optional parameter.
 * connectionPoolingMaxSize : The string representation of an integer that represents the maximum number of connections per connection identity that can be maintained concurrently. This is a optional parameter.
 
+### Anonymous bind
+
+In case anonymous bind is accepted by LDAP server configuration, `securityPrincipal` can be omited to initiate the connection with LDAP server without authentication.
+`securityCredentials` parameter is ignored when `securityPrincipal` is not set.
+
 #### Ensuring secure data
 For security purposes, you should store securityCredentials in the WSO2 secure vault and make reference to it by using an alias instead of hard-coding the actual value in the configuration file. For more information, see [Working with Passwords](https://docs.wso2.com/display/EI640/Working+with+Passwords+in+the+ESB+profile).
 
