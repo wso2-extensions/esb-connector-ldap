@@ -66,9 +66,13 @@ public class LDAPUtils {
         Hashtable env = new Hashtable();
         env.put(Context.INITIAL_CONTEXT_FACTORY, LDAPConstants.COM_SUN_JNDI_LDAP_LDAPCTXFACTORY);
         env.put(Context.PROVIDER_URL, providerUrl);
-        env.put(Context.SECURITY_PRINCIPAL, securityPrincipal);
-        env.put(Context.SECURITY_CREDENTIALS, securityCredentials);
         env.put(LDAPConstants.JAVA_NAMING_LDAP_ATTRIBUTE_BINARY, LDAPConstants.OBJECT_GUID);
+
+        // Fallback to anonymous binding when no credentials are provided
+        if (StringUtils.isNotEmpty(securityPrincipal)) {
+            env.put(Context.SECURITY_PRINCIPAL, securityPrincipal);
+            env.put(Context.SECURITY_CREDENTIALS, securityCredentials);
+        }
 
         if(StringUtils.isNotEmpty(timeout)) {
             env.put(LDAPConstants.COM_JAVA_JNDI_LDAP_READ_TIMEOUT, timeout);
