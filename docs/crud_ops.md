@@ -13,6 +13,7 @@ For a sample proxy service that illustrates how to work with each operation, see
 | [searchEntry](#searching-a-ldap-entry)      | Performs a search for one or more LDAP entities with the specified search keys.  |
 | [updateEntry](#updating-a-ldap-entry)    | Updates an existing LDAP entry in the LDAP server. |
 | [deleteEntry](#deleting-a-ldap-entry)    | Deletes an existing LDAP entry from the LDAP server.    |
+| [updateName](#updating-a-ldap-common-name)    | Updates an existing ldap Common Name (CN).    |
 
 ### Operation details
 
@@ -320,6 +321,50 @@ curl http://localhost:8280/services/addEntry -H "Content-Type: application/json"
 ```
 5. LDAP returns an json response similar to the one shown below:
  
+```json
+{"result":{"message":"Success"}}
+```
+
+#### Updating a LDAP Common Name
+
+The updateName operation updates existing ldap Common Name (CN).
+
+**updateName**
+```xml
+<ldap.updateName>
+   <oldName>CN=oldName, CN=Computers,DC=wso2,DC=test</oldName>
+   <newName>CN=updatedName, CN=Computers,DC=wso2,DC=test</newName>
+</ldap.updateName>
+```
+
+**Properties**
+* oldName : Fully qualified existing common name (CN) that is to be updated.
+* newName : Fully qualified new common name (CN).
+
+**Sample request**
+
+Following is a sample request that can be handled by the updateName operation.
+
+```json
+{ 
+   "providerUrl":"ldap://localhost:10389/",
+   "securityPrincipal":"cn=admin,dc=wso2,dc=com",
+   "securityCredentials":"comadmin",
+   "secureConnection":"false",
+   "disableSSLCertificateChecking":"false",
+   "application":"ldap",
+   "operation":"createEntity",
+   "content":{ 
+      "oldName":"CN=oldName, CN=Computers,DC=wso2,DC=test",
+      "newName":"CN=updatedName, CN=Computers,DC=wso2,DC=test"
+   }
+}
+```
+
+**Sample response**
+
+Given below is a sample response for the updateName operation.
+
 ```json
 {"result":{"message":"Success"}}
 ```
