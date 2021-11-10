@@ -66,6 +66,8 @@ public class LDAPConstants {
     public static final String CONNECTION_POOLING_MAX_SIZE = "connectionPoolingMaxSize";
     public static final String COM_JAVA_JNDI_LDAP_READ_TIMEOUT = "com.sun.jndi.ldap.read.timeout";
     public static final String TIMEOUT = "timeout";
+    public static final String OLD_NAME = "oldName";
+    public static final String NEW_NAME = "newName";
 
     public static final class ErrorConstants {
         public static final int SEARCH_ERROR = 7000001;
@@ -74,6 +76,7 @@ public class LDAPConstants {
         public static final int UPDATE_ENTRY_ERROR = 7000004;
         public static final int DELETE_ENTRY_ERROR = 7000005;
         public static final int ENTRY_DOESNOT_EXISTS_ERROR = 7000006;
+        public static final int RENAME_ERROR = 7000007;
 
     }
 }

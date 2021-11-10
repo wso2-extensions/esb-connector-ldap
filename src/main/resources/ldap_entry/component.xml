@@ -30,6 +30,10 @@
             <file>updateEntry.xml</file>
             <description>This updates entries in ldap directory</description>
         </component>
+        <component name="updateName">
+            <file>updateName.xml</file>
+            <description>This updates names in ldap directory</description>
+        </component>
         <component name="deleteEntry">
             <file>deleteEntry.xml</file>
             <description>This deletes entries in ldap directory</description>
