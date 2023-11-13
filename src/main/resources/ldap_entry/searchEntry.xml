@@ -29,6 +29,8 @@
     <parameter name="attributes"
                description="The attributes of the LDAP entry that should be included in the search
                result."/>
+    <parameter name="allowEmptySearchResult"
+               description="Boolean value to allow empty Search Result or throw Exception"/>
     <sequence>
         <property expression="$func:onlyOneReference" name="onlyOneReference" scope="default"
                   type="STRING"/>
@@ -37,6 +39,8 @@
         <property expression="$func:dn" name="dn" scope="default" type="STRING"/>
         <property expression="$func:attributes" name="attributes" scope="default" type="STRING"/>
         <property expression="$func:limit" name="limit" scope="default" type="STRING"/>
+        <property expression="$func:allowEmptySearchResult" name="allowEmptySearchResult" scope="default"
+                  type="STRING"/>
 
         <class name="org.wso2.carbon.connector.ldap.SearchEntry"/>
     </sequence>
