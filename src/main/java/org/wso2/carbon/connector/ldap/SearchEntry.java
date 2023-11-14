@@ -67,8 +67,10 @@ public class SearchEntry extends AbstractConnector {
             }
         }
 
-        boolean onlyOneReference = Boolean.valueOf(
+        boolean onlyOneReference = Boolean.parseBoolean(
                 (String) getParameter(messageContext, LDAPConstants.ONLY_ONE_REFERENCE));
+        boolean allowEmptySearchResult = Boolean.parseBoolean(
+                (String) getParameter(messageContext, LDAPConstants.ALLOW_EMPTY_SEARCH_RESULT));
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE,
                 LDAPConstants.NAMESPACE);
@@ -105,17 +107,13 @@ public class SearchEntry extends AbstractConnector {
                             result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
                         }
                     } else {
-
-                        throw new NamingException("No matching result or entity found for this search");
+                        if (!allowEmptySearchResult) {
+                            throw new NamingException("No matching result or entity found for this search");
+                        }
                     }
                 } else {
-                    entityResult = makeSureOnlyOneMatch(results);
-                    if (entityResult == null) {
-                        throw new NamingException("Multiple objects for the searched target have been found. Try to " +
-                                "change onlyOneReference option");
-                    } else {
-                        result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
-                    }
+                    entityResult = makeSureOnlyOneMatch(results, allowEmptySearchResult);
+                    result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
                 }
                 LDAPUtils.preparePayload(messageContext, result);
                 if (context != null) {
@@ -191,7 +189,8 @@ public class SearchEntry extends AbstractConnector {
         return entry;
     }
 
-    private SearchResult makeSureOnlyOneMatch(NamingEnumeration<SearchResult> results) throws NamingException {
+    private SearchResult makeSureOnlyOneMatch(NamingEnumeration<SearchResult> results,
+                                              boolean allowEmptySearchResult) throws NamingException {
         SearchResult searchResult = null;
 
         if (results.hasMoreElements()) {
@@ -200,11 +199,15 @@ public class SearchEntry extends AbstractConnector {
             // Make sure there is not another item available, there should be only 1 match
             if (results.hasMoreElements()) {
                 // Here the code has matched multiple objects for the searched target
-                return null;
+                throw new NamingException("Multiple objects for the searched target have been found. Try to " +
+                        "change onlyOneReference option");
             }
             return searchResult;
         } else {
-            throw new NamingException("Could not find a matching entry for this search");
+            if (!allowEmptySearchResult) {
+                throw new NamingException("Could not find a matching entry for this search");
+            }
+            return null;
         }
     }
 

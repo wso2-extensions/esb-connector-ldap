@@ -23,7 +23,7 @@
     <groupId>org.wso2.carbon.connector</groupId>
     <artifactId>org.wso2.carbon.connector.ldap</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.12</version>
+    <version>1.0.13</version>
     <name>WSO2 Carbon - Mediation Library Connector For LDAP</name>
     <url>http://wso2.org</url>
     <properties>

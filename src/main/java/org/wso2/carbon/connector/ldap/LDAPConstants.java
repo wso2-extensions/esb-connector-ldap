@@ -68,6 +68,7 @@ public class LDAPConstants {
     public static final String TIMEOUT = "timeout";
     public static final String OLD_NAME = "oldName";
     public static final String NEW_NAME = "newName";
+    public static final String ALLOW_EMPTY_SEARCH_RESULT = "allowEmptySearchResult";
 
     public static final class ErrorConstants {
         public static final int SEARCH_ERROR = 7000001;
