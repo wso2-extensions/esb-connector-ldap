@@ -6,7 +6,7 @@ The LDAP [Connector](https://docs.wso2.com/display/EI650/Working+with+Connectors
 
 | Connector version  | Supported WSO2 ESB/EI version |
 | ------------- | ------------- |
-| [1.0.13](https://github.com/wso2-extensions/esb-connector-ldap/tree/org.wso2.carbon.connector.ldap-1.0.13) | EI 6.4.0, EI 7.x, MI 4.x.x    |
+| [1.0.13](https://github.com/wso2-extensions/esb-connector-ldap/releases/tag/v1.0.13) | EI 6.6.0, EI 7.x, MI 4.x.x                                   |
 | [1.0.12](https://github.com/wso2-extensions/esb-connector-ldap/tree/org.wso2.carbon.connector.ldap-1.0.12) | EI 6.4.0, EI 7.x    |
 | [1.0.11](https://github.com/wso2-extensions/esb-connector-ldap/tree/org.wso2.carbon.connector.ldap-1.0.11) | EI 7.x    |
 | [1.0.10](https://github.com/wso2-extensions/esb-connector-ldap/tree/org.wso2.carbon.connector.ldap-1.0.10) | EI 6.4.0, EI 6.5.0    |
