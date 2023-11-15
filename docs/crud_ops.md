@@ -87,6 +87,7 @@ The searchEntry operation performs a search for one or more LDAP entities based 
     <attributes>{$ctx:attributes}</attributes>
     <onlyOneReference>{$ctx:onlyOneReference}</onlyOneReference>
     <limit>1000</limit>
+    <allowEmptySearchResult>{$ctx:allowEmptySearchResult}</allowEmptySearchResult>
 </ldap.searchEntry>
 ```
 
@@ -101,6 +102,7 @@ The searchEntry operation performs a search for one or more LDAP entities based 
 * scope : LDAP search scope to retrieve results. By default `SUBTREE` scope is set. Provide `OBJECT` to set scope to object level and `ONE_LEVEL` to set one level scope.
 * onlyOneReference : Boolean value whether to guarantee or not only one reference.
 * limit : This allows you to set a limit on the number of search results. If this property is not defined the maximum no of search results will be returned.
+* allowEmptySearchResult : Boolean value to allow empty Search Result or throw Exception. If this property is not defined, an exception will be thrown and fault sequence is executed if the search result is empty.
 
 **Sample request**
 
