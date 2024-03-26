@@ -1,0 +1,13 @@
+{
+    "name": "LDAP",
+    "owner": "WSO2",
+    "category": "Developer Tools",
+    "documentationUrl": "https://ei.docs.wso2.com/en/latest/micro-integrator/references/connectors/ldap-connector/ldap-connector-overview/",
+    "description": "The LDAP Connector provides access for LDAP servers through a simple web services interface to do CURD (Create, Update, Read, Delete) operations on LDAP entries. ",
+    "status": "Active",
+    "labels": [
+        "DevTools",
+        "Technology"
+    ],
+    "releases": []
+}
