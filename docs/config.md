@@ -1,6 +1,6 @@
 # Configuring LDAP Operations
 
-[[Prerequisites]](#Prerequisites) [[Initializing the Connector]](#initializing-the-connector)
+[[Prerequisites]](#prerequisites) [[Initializing the Connector]](#initializing-the-connector)
 
 ## Prerequisites
 
@@ -19,7 +19,9 @@ You can follow the following steps to import your LDAP certificate into wso2esb 
 ## Initializing the Connector
 
 To use the LDAP connector, add the <ldap.init> element in your configuration before performing any other operation. This LDAP configuration authenticates with the LDAP server in order to gain access to perform various LDAP operations.
+
 **init**
+
 ```xml
 <ldap.init>
     <providerUrl>{$ctx:providerUrl}</providerUrl>
@@ -47,10 +49,15 @@ To use the LDAP connector, add the <ldap.init> element in your configuration bef
 * connectionPoolingInitSize : The string representation of an integer that represents the number of connections per connection identity to create when initially creating a connection for the identity. This is a optional parameter.
 * connectionPoolingMaxSize : The string representation of an integer that represents the maximum number of connections per connection identity that can be maintained concurrently. This is a optional parameter.
 
-#### Ensuring secure data
+### Anonymous bind
+
+In case anonymous bind is accepted by LDAP server configuration, `securityPrincipal` can be omited to initiate the connection with LDAP server without authentication.
+`securityCredentials` parameter is ignored when `securityPrincipal` is not set.
+
+### Ensuring secure data
 For security purposes, you should store securityCredentials in the WSO2 secure vault and make reference to it by using an alias instead of hard-coding the actual value in the configuration file. For more information, see [Working with Passwords](https://docs.wso2.com/display/EI640/Working+with+Passwords+in+the+ESB+profile).
 
-#### Re-using LDAP configurations
+### Re-using LDAP configurations
 For best results, save the LDAP configuration as a local entry. You can then easily reference it with the configKey attribute in your LDAP operations. For example, if you saved the above <ldap.init> entry as a local entry named ldapConfig,  you could reference it from the deleteEntry operation as follows:
 
 ```xml
