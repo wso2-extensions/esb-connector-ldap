@@ -8,7 +8,7 @@
     "mavenArtifactId": "org.wso2.carbon.connector.ldap",
     "description": "The LDAP Connector provides access for LDAP servers through a simple web services interface to do CURD (Create, Update, Read, Delete) operations on LDAP entries. ",
     "status": "Active",
-    "connectorRank": 18,
+    "rank": 18,
     "type": "Connector",
     "labels": [
         "database"
@@ -57,7 +57,12 @@
                     "isHidden":false
                 }
             ],
-            "connections": [],
+            "connections": [
+                {
+                    "name": "ldap",
+                    "description": "Connection for querying LDAP directories."
+                }
+            ],
             "isHidden": false
         }
     ]
