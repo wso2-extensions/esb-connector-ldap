@@ -1,10 +1,15 @@
 {
     "name": "LDAP",
     "owner": "WSO2",
+    "product": "MI",
     "category": "Developer Tools",
     "documentationUrl": "https://mi.docs.wso2.com/en/latest/reference/connectors/ldap-connector/ldap-connector-overview/",
+    "mavenGroupId": "org.wso2.integration.connector",
+    "mavenArtifactId": "mi-connector-ldap",
     "description": "The LDAP Connector provides access for LDAP servers through a simple web services interface to do CURD (Create, Update, Read, Delete) operations on LDAP entries. ",
     "status": "Active",
+    "rank": 18,
+    "type": "Connector",
     "labels": [
         "database"
     ],
@@ -14,6 +19,49 @@
             "products": [
                 "MI 1.2.0",
                 "MI 4.2.0"
+            ],
+            "operations": [
+                {
+                    "name":"addEntry",
+                    "description":"This adds new entries to ldap directory",
+                    "isHidden":false
+                },
+                {
+                    "name":"searchEntry",
+                    "description":"This searches entries in ldap directory",
+                    "isHidden":false
+                },
+                {
+                    "name":"updateEntry",
+                    "description":"This updates entries in ldap directory",
+                    "isHidden":false
+                },
+                {
+                    "name":"updateName",
+                    "description":"This updates names in ldap directory",
+                    "isHidden":false
+                },
+                {
+                    "name":"deleteEntry",
+                    "description":"This deletes entries in ldap directory",
+                    "isHidden":false
+                },
+                {
+                    "name":"init",
+                    "description":"This does initialization part",
+                    "isHidden":false
+                },
+                {
+                    "name":"authenticate",
+                    "description":"This does authentication of a given user",
+                    "isHidden":false
+                }
+            ],
+            "connections": [
+                {
+                    "name": "ldap",
+                    "description": "Connection for querying LDAP directories."
+                }
             ],
             "isHidden": false
         }
