@@ -23,4 +23,5 @@
         <dependency component="ldap_auth"/>
         <description>LDAP connector for WSO2 ESB</description>
     </component>
+    <displayName>LDAP</displayName>
 </connector>
