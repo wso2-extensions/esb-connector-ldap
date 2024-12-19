@@ -21,7 +21,7 @@
     <groupId>org.wso2.integration.connector</groupId>
     <artifactId>mi-connector-ldap</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.16-SNAPSHOT</version>
+    <version>1.0.16</version>
     <name>WSO2 Carbon - Mediation Library Connector For LDAP</name>
     <url>http://wso2.org</url>
     <properties>
@@ -196,7 +196,7 @@
         <url>https://github.com/wso2-extensions/esb-connector-ldap.git</url>
         <developerConnection>scm:git:https://github.com/wso2-extensions/esb-connector-ldap
         </developerConnection>
-        <tag>HEAD</tag>
+        <tag>v1.0.16</tag>
     </scm>
     <build>
         <plugins>
