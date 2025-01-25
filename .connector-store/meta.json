@@ -57,12 +57,7 @@
                     "isHidden":false
                 }
             ],
-            "connections": [
-                {
-                    "name": "ldap",
-                    "description": "Connection for querying LDAP directories."
-                }
-            ],
+            "connections": [],
             "isHidden": false
         },
         {
@@ -108,12 +103,7 @@
                     "isHidden":false
                 }
             ],
-            "connections": [
-                {
-                    "name": "ldap",
-                    "description": "Connection for querying LDAP directories."
-                }
-            ],
+            "connections": [],
             "isHidden": false
         }
     ]
