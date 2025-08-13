@@ -1,0 +1,157 @@
+{
+  "connectorName": "ldap",
+  "operationName": "searchEntry",
+  "title": "Search LDAP Entry",
+  "help": "Searches LDAP entries using the specified distinguished name (DN), object class, filters, and other search parameters.",
+  "elements": [
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "General",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "configRef",
+              "displayName": "LDAP Connection",
+              "inputType": "connection",
+              "allowedConnectionTypes": [
+                "LDAP"
+              ],
+              "defaultType": "connection.LDAP",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip": "Connection configuration used to connect to the LDAP server."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "Search Parameters",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "dn",
+              "displayName": "Distinguished Name (DN)",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip": "The distinguished name (base DN) from where the search should begin. Example: ou=Users,dc=example,dc=com"
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "filters",
+              "displayName": "Filters",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip": "Search filters in comma-separated key-value format. Example: cn=John,mail=john.doe@example.com"
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "objectClass",
+              "displayName": "Object Class",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip": "The object class of the LDAP entry to search for. Example: inetOrgPerson"
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "attributes",
+              "displayName": "Attributes",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip": "Attributes to include in the search result. Example: cn,sn,mail"
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "limit",
+              "displayName": "Result Limit",
+              "inputType": "stringOrExpression",
+              "defaultValue": "10",
+              "required": "false",
+              "helpTip": "Maximum number of search results to return. Use 0 for unlimited."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "scope",
+              "displayName": "Search Scope",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip": "Specifies the search depth: `base` searches only the specified entry, `one` searches its immediate children, and `sub` searches the entire subtree rooted at baseDN."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "onlyOneReference",
+              "displayName": "Only One Reference",
+              "inputType": "checkbox",
+              "defaultValue": "false",
+              "required": "false",
+              "helpTip": "If true, ensures only one reference is returned."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "allowEmptySearchResult",
+              "displayName": "Allow Empty Search Result",
+              "inputType": "checkbox",
+              "defaultValue": "true",
+              "required": "false",
+              "helpTip": "If true, no exception will be thrown when the search returns no result."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "Output",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "responseVariable",
+              "displayName": "Output Variable Name",
+              "inputType": "string",
+              "deriveResponseVariable": "true",
+              "required": "true",
+              "helpTip": "Name of the variable to which the output of the operation should be assigned."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "overwriteBody",
+              "displayName": "Overwrite Message Body",
+              "inputType": "checkbox",
+              "defaultValue": "false",
+              "helpTip": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable).",
+              "required": "false"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

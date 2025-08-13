@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "LDAP Add Entry Operation Response Schema",
+  "description": "Schema representing the output of the addEntry operation in the LDAP connector.",
+  "properties": {
+    "payload": {
+      "description": "Response for the `addEntry` method. Indicates success or failure of the entry creation.",
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "description": "Indicates whether the LDAP entry was successfully added."
+        },
+        "message": {
+          "type": "string",
+          "description": "Optional message with additional details about the add entry operation."
+        }
+      }
+    },
+    "attributes": {
+      "description": "Metadata about the operation.",
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "integer",
+          "description": "HTTP-like status code representing the operation result. (e.g., 200 for success, 400 for invalid input)"
+        }
+      }
+    },
+    "headers": {
+      "description": "Headers related to the operation response. May be empty for LDAP operations.",
+      "type": "object",
+      "properties": {}
+    }
+  }
+}

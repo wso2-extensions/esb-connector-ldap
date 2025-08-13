@@ -1,0 +1,91 @@
+{
+  "connectorName": "ldap",
+  "operationName": "authenticate",
+  "title": "Authenticate LDAP User",
+  "help": "Authenticates a user in the LDAP directory using the distinguished name (DN) and password.",
+  "elements": [
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "General",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "configRef",
+              "displayName": "LDAP Connection",
+              "inputType": "connection",
+              "allowedConnectionTypes": [
+                "LDAP"
+              ],
+              "defaultType": "connection.LDAP",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip": "Connection configuration used to connect to the LDAP server."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "Authentication Parameters",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "dn",
+              "displayName": "Distinguished Name (DN)",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip": "The distinguished name (DN) of the LDAP entry to authenticate. Example: cn=John Doe,ou=Users,dc=example,dc=com"
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "password",
+              "displayName": "Password",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip": "Password of the LDAP user for authentication."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "Output",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "responseVariable",
+              "displayName": "Output Variable Name",
+              "inputType": "string",
+              "deriveResponseVariable": "true",
+              "required": "true",
+              "helpTip": "Name of the variable to which the output of the operation should be assigned."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "overwriteBody",
+              "displayName": "Overwrite Message Body",
+              "inputType": "checkbox",
+              "defaultValue": "false",
+              "helpTip": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable).",
+              "required": "false"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

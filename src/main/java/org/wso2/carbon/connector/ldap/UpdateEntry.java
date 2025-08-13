@@ -27,17 +27,17 @@ import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.connector.core.ConnectException;
+import org.wso2.integration.connector.core.AbstractConnectorOperation;
+import org.wso2.integration.connector.core.ConnectException;
 
 import javax.naming.NamingException;
 import javax.naming.directory.*;
 import java.util.Iterator;
 
-public class UpdateEntry extends AbstractConnector {
+public class UpdateEntry extends AbstractConnectorOperation {
 
     @Override
-    public void connect(MessageContext messageContext) throws ConnectException {
+    public void execute(MessageContext messageContext, String s, Boolean aBoolean) throws ConnectException {
         String attributesString = (String) getParameter(messageContext, LDAPConstants.ATTRIBUTES);
         String dn = (String) getParameter(messageContext, LDAPConstants.DN);
         String mode = (String) getParameter(messageContext, LDAPConstants.MODE);
@@ -52,7 +52,7 @@ public class UpdateEntry extends AbstractConnector {
 
             Attributes entry = new BasicAttributes();
             if (StringUtils.isNotEmpty(attributesString)) {
-                JSONObject object = new JSONObject(attributesString);
+                JSONObject object = new JSONObject(LDAPUtils.createJsonObjectString(attributesString.trim()));
                 Iterator keys = object.keys();
                 while (keys.hasNext()) {
                     String key = (String) keys.next();

@@ -15,6 +15,51 @@
     ],
     "releases": [
         {
+            "tagName": "v2.0.0",
+            "products": [
+                "MI 4.4.0"
+            ],
+            "operations": [
+                {
+                    "name": "addEntry",
+                    "description": "This adds new entries to ldap directory",
+                    "isHidden": false
+                },
+                {
+                    "name": "searchEntry",
+                    "description": "This searches entries in ldap directory",
+                    "isHidden": false
+                },
+                {
+                    "name": "updateEntry",
+                    "description": "This updates entries in ldap directory",
+                    "isHidden": false
+                },
+                {
+                    "name": "updateName",
+                    "description": "This updates names in ldap directory",
+                    "isHidden": false
+                },
+                {
+                    "name": "deleteEntry",
+                    "description": "This deletes entries in ldap directory",
+                    "isHidden": false
+                },
+                {
+                    "name": "init",
+                    "description": "This does initialization part",
+                    "isHidden": true
+                },
+                {
+                    "name": "authenticate",
+                    "description": "This does authentication of a given user",
+                    "isHidden": false
+                }
+            ],
+            "connections": [],
+            "isHidden": false
+        },
+        {
             "tagName": "v1.0.14",
             "products": [
                 "MI 1.2.0",

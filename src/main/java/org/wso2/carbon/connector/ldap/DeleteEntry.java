@@ -28,13 +28,13 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
-import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.connector.core.ConnectException;
+import org.wso2.integration.connector.core.AbstractConnectorOperation;
+import org.wso2.integration.connector.core.ConnectException;
 
-public class DeleteEntry extends AbstractConnector {
+public class DeleteEntry extends AbstractConnectorOperation {
 
     @Override
-    public void connect(MessageContext messageContext) throws ConnectException {
+    public void execute(MessageContext messageContext, String s, Boolean aBoolean) throws ConnectException {
         String dn = (String) getParameter(messageContext, LDAPConstants.DN);
 
         OMFactory factory = OMAbstractFactory.getOMFactory();

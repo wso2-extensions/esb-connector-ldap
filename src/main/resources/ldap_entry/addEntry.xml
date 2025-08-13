@@ -22,6 +22,8 @@
     <parameter name="attributes" description="The attributes of the LDAP entry that should be
                included in the add entry result."/>
     <parameter name="dn" description="The distinguished name of the entry you need to add entry."/>
+    <parameter name="responseVariable" description="The name of the variable to which the response should be stored."/>
+    <parameter name="overwriteBody" description="Replace the Message Body in Message Context with the response of the operation."/>
     <sequence>
         <property expression="$func:objectClass" name="objectClass" scope="default" type="STRING"/>
         <property expression="$func:attributes" name="attributes" scope="default" type="STRING"/>

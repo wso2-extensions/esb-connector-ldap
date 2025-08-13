@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "LDAP Delete Entry Operation Response Schema",
+  "description": "Schema representing the output of the `deleteEntry` operation in the LDAP connector.",
+  "properties": {
+    "payload": {
+      "description": "Response for the `deleteEntry` method. Indicates success or failure of the entry deletion.",
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "description": "Indicates whether the LDAP entry was successfully deleted."
+        },
+        "message": {
+          "type": "string",
+          "description": "Optional message with additional details about the delete entry operation."
+        }
+      }
+    },
+    "attributes": {
+      "description": "Metadata about the operation.",
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "integer",
+          "description": "HTTP-like status code representing the result of the operation (e.g., 200 for success, 400 for invalid input)."
+        }
+      }
+    },
+    "headers": {
+      "description": "Headers related to the operation response. May be empty for LDAP operations.",
+      "type": "object",
+      "properties": {}
+    }
+  }
+}

@@ -37,20 +37,21 @@ import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.wso2.carbon.connector.core.AbstractConnector;
+import org.wso2.integration.connector.core.AbstractConnectorOperation;
+import org.wso2.integration.connector.core.ConnectException;
 
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 
-public class SearchEntry extends AbstractConnector {
+public class SearchEntry extends AbstractConnectorOperation {
     protected static Log log = LogFactory.getLog(SearchEntry.class);
 
     @Override
-    public void connect(MessageContext messageContext) {
+    public void execute(MessageContext messageContext, String s, Boolean aBoolean) throws ConnectException {
         String objectClass = (String) getParameter(messageContext, LDAPConstants.OBJECT_CLASS);
         String filter = (String) getParameter(messageContext, LDAPConstants.FILTERS);
         String dn = (String) getParameter(messageContext, LDAPConstants.DN);
-        String returnAttributes[] = {};
+        String[] returnAttributes = new String[0];
         String returnAttributesValue = (String) getParameter(messageContext, LDAPConstants.ATTRIBUTES);
         if (!(returnAttributesValue == null || returnAttributesValue.isEmpty())) {
             returnAttributes = returnAttributesValue.split(",");
@@ -129,7 +130,7 @@ public class SearchEntry extends AbstractConnector {
         }
     }
 
-    private OMElement prepareNode(SearchResult entityResult, OMFactory factory, OMNamespace ns, String returnAttributes[])
+    private OMElement prepareNode(SearchResult entityResult, OMFactory factory, OMNamespace ns, String[] returnAttributes)
             throws NamingException {
         Attributes attributes = entityResult.getAttributes();
         Attribute attribute;
@@ -242,7 +243,6 @@ public class SearchEntry extends AbstractConnector {
                                                              String[] returningAttributes,
                                                              int searchScope, DirContext rootContext, int limit)
             throws NamingException {
-        String userBase = dn;
         SearchControls userSearchControl = new SearchControls();
         if (returningAttributes.length > 0) {
             userSearchControl.setReturningAttributes(returningAttributes);
@@ -250,21 +250,21 @@ public class SearchEntry extends AbstractConnector {
         userSearchControl.setCountLimit(limit);
         userSearchControl.setSearchScope(searchScope);
         NamingEnumeration<SearchResult> userSearchResults;
-        userSearchResults = rootContext.search(userBase, searchFilter, userSearchControl);
+        userSearchResults = rootContext.search(dn, searchFilter, userSearchControl);
         return userSearchResults;
 
     }
 
     private String generateSearchFilter(String objectClass, String filter, MessageContext messageContext) {
-        String attrFilter = "";
+        StringBuilder attrFilter = new StringBuilder();
         try {
-            JSONObject object = new JSONObject(filter);
+            JSONObject object = new JSONObject(LDAPUtils.createJsonObjectString(filter.trim()));
             Iterator keys = object.keys();
             while (keys.hasNext()) {
                 String key = (String) keys.next();
-                attrFilter += "(";
-                attrFilter += key + "=" + object.getString(key);
-                attrFilter += ")";
+                attrFilter.append("(");
+                attrFilter.append(key).append("=").append(object.getString(key));
+                attrFilter.append(")");
             }
         } catch (JSONException e) {
             handleException("Error while passing the JSON object", e, messageContext);
@@ -272,7 +272,7 @@ public class SearchEntry extends AbstractConnector {
         if (objectClass != null && !objectClass.isEmpty()) {
             return "(&(objectClass=" + objectClass + ")" + attrFilter + ")";
         } else {
-            return attrFilter;
+            return attrFilter.toString();
         }
     }
 

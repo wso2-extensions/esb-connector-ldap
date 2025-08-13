@@ -21,6 +21,7 @@
         <component name="init">
             <file>init.xml</file>
             <description>This does initialization part</description>
+            <hidden>true</hidden>
         </component>
     </subComponents>
 </component>
