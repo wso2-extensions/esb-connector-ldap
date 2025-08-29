@@ -21,43 +21,350 @@
             ],
             "operations": [
                 {
-                    "name": "addEntry",
-                    "description": "This adds new entries to ldap directory",
+                    "name": "updateEntry",
+                    "description": "Update LDAP Entry",
+                    "params": [
+                        {
+                            "name": "dn",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The distinguished name (DN) of the LDAP entry to update. Example: cn=John Doe,ou=Users,dc=example,dc=com"
+                        },
+                        {
+                            "name": "attributes",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The attributes to update for the LDAP entry, provided as key-value pairs. Example: {\"mail\":\"john.doe@example.com\",\"telephoneNumber\"=\"123456789\"}"
+                        },
+                        {
+                            "name": "mode",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "REPLACE",
+                            "description": "The update mode: ADD to add new attributes, REPLACE to overwrite existing values, or REMOVE to delete attributes."
+                        },
+                        {
+                            "name": "responseVariable",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Name of the variable to which the output of the operation should be assigned."
+                        },
+                        {
+                            "name": "overwriteBody",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
+                        }
+                    ],
                     "isHidden": false
                 },
                 {
                     "name": "searchEntry",
-                    "description": "This searches entries in ldap directory",
-                    "isHidden": false
-                },
-                {
-                    "name": "updateEntry",
-                    "description": "This updates entries in ldap directory",
-                    "isHidden": false
-                },
-                {
-                    "name": "updateName",
-                    "description": "This updates names in ldap directory",
+                    "description": "Search LDAP Entry",
+                    "params": [
+                        {
+                            "name": "dn",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The distinguished name (base DN) from where the search should begin. Example: ou=Users,dc=example,dc=com"
+                        },
+                        {
+                            "name": "filters",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Search filters in comma-separated key-value format. Example: cn=John,mail=john.doe@example.com"
+                        },
+                        {
+                            "name": "objectClass",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The object class of the LDAP entry to search for. Example: inetOrgPerson"
+                        },
+                        {
+                            "name": "attributes",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Attributes to include in the search result. Example: cn,sn,mail"
+                        },
+                        {
+                            "name": "limit",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "10",
+                            "description": "Maximum number of search results to return. Use 0 for unlimited."
+                        },
+                        {
+                            "name": "scope",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Specifies the search depth: `base` searches only the specified entry, `one` searches its immediate children, and `sub` searches the entire subtree rooted at baseDN."
+                        },
+                        {
+                            "name": "onlyOneReference",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "If true, ensures only one reference is returned."
+                        },
+                        {
+                            "name": "allowEmptySearchResult",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "true",
+                            "description": "If true, no exception will be thrown when the search returns no result."
+                        },
+                        {
+                            "name": "responseVariable",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Name of the variable to which the output of the operation should be assigned."
+                        },
+                        {
+                            "name": "overwriteBody",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
+                        }
+                    ],
                     "isHidden": false
                 },
                 {
                     "name": "deleteEntry",
-                    "description": "This deletes entries in ldap directory",
+                    "description": "Delete LDAP Entry",
+                    "params": [
+                        {
+                            "name": "dn",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The distinguished name (DN) of the LDAP entry to be deleted. Example: cn=John Doe,ou=Users,dc=example,dc=com"
+                        },
+                        {
+                            "name": "responseVariable",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Name of the variable to which the output of the operation should be assigned."
+                        },
+                        {
+                            "name": "overwriteBody",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
+                        }
+                    ],
                     "isHidden": false
                 },
                 {
-                    "name": "init",
-                    "description": "This does initialization part",
-                    "isHidden": true
+                    "name": "addEntry",
+                    "description": "Add LDAP Entry",
+                    "params": [
+                        {
+                            "name": "dn",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The distinguished name of the LDAP entry to be added. Example: cn=John Doe,ou=Users,dc=example,dc=com"
+                        },
+                        {
+                            "name": "objectClass",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The object class of the LDAP entry. Example: inetOrgPerson, organizationalUnit"
+                        },
+                        {
+                            "name": "attributes",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "A set of attributes for the new LDAP entry in JSON format. Example: {\"sn\":\"Doe\", \"givenName\":\"John\", \"mail\":\"john.doe@example.com\"}"
+                        },
+                        {
+                            "name": "responseVariable",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Name of the variable to which the output of the operation should be assigned."
+                        },
+                        {
+                            "name": "overwriteBody",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
+                        }
+                    ],
+                    "isHidden": false
+                },
+                {
+                    "name": "updateName",
+                    "description": "Rename LDAP Entry",
+                    "params": [
+                        {
+                            "name": "oldName",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The current fully qualified distinguished name (DN) of the LDAP entry. Example: cn=John Doe,ou=Users,dc=example,dc=com"
+                        },
+                        {
+                            "name": "newName",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The new fully qualified distinguished name (DN) for the LDAP entry. Example: cn=John Smith,ou=Users,dc=example,dc=com"
+                        },
+                        {
+                            "name": "responseVariable",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Name of the variable to which the output of the operation should be assigned."
+                        },
+                        {
+                            "name": "overwriteBody",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
+                        }
+                    ],
+                    "isHidden": false
                 },
                 {
                     "name": "authenticate",
-                    "description": "This does authentication of a given user",
+                    "description": "Authenticate LDAP User",
+                    "params": [
+                        {
+                            "name": "dn",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The distinguished name (DN) of the LDAP entry to authenticate. Example: cn=John Doe,ou=Users,dc=example,dc=com"
+                        },
+                        {
+                            "name": "password",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Password of the LDAP user for authentication."
+                        },
+                        {
+                            "name": "responseVariable",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Name of the variable to which the output of the operation should be assigned."
+                        },
+                        {
+                            "name": "overwriteBody",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
+                        }
+                    ],
                     "isHidden": false
                 }
             ],
-            "connections": [],
-            "isHidden": false
+            "connections": [
+                {
+                    "name": "LDAP",
+                    "description": "LDAP Connection",
+                    "params": [
+                        {
+                            "name": "connectionName",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "LDAP_CONNECTION_1",
+                            "description": "The unique name of the connection to LDAP."
+                        },
+                        {
+                            "name": "secureConnection",
+                            "type": "boolean",
+                            "required": true,
+                            "defaultValue": "false",
+                            "description": "Boolean value to enable or disable secure connection to LDAP."
+                        },
+                        {
+                            "name": "disableSSLCertificateChecking",
+                            "type": "boolean",
+                            "required": true,
+                            "defaultValue": "false",
+                            "description": "Boolean value to disable or enable SSL certificate checking for LDAP."
+                        },
+                        {
+                            "name": "providerUrl",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "URI of the LDAP directory, e.g., ldap://<host>:<port>/"
+                        },
+                        {
+                            "name": "securityPrincipal",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Username used to log in to LDAP."
+                        },
+                        {
+                            "name": "securityCredentials",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Password used to log in to LDAP."
+                        },
+                        {
+                            "name": "timeout",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "30000",
+                            "description": "Timeout duration of the LDAP request in milliseconds."
+                        },
+                        {
+                            "name": "connectionPoolingEnabled",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Enable or disable connection pooling for LDAP."
+                        },
+                        {
+                            "name": "connectionPoolingProtocol",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "plain",
+                            "description": "Space-separated protocol types for connection pooling. Valid values: 'plain', 'ssl'."
+                        },
+                        {
+                            "name": "connectionPoolingInitSize",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "5",
+                            "description": "Number of connections per connection identity to create initially."
+                        },
+                        {
+                            "name": "connectionPoolingMaxSize",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "20",
+                            "description": "Maximum number of connections per connection identity that can be maintained concurrently."
+                        }
+                    ]
+                }
+            ]
         },
         {
             "tagName": "v1.0.14",
