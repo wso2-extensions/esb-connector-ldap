@@ -21,6 +21,8 @@
                description="The attributes of the LDAP entry that you need to update."/>
     <parameter name="dn" description="The distinguished name of the entry you need to update."/>
     <parameter name="mode" description="The mode of the update operation. Possible values."/>
+    <parameter name="responseVariable" description="The name of the variable to which the response should be stored."/>
+    <parameter name="overwriteBody" description="Replace the Message Body in Message Context with the response of the operation."/>
     <sequence>
         <property expression="$func:attributes" name="attributes" scope="default" type="STRING"/>
         <property expression="$func:dn" name="dn" scope="default" type="STRING"/>

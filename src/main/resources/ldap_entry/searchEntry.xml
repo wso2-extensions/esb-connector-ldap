@@ -31,6 +31,8 @@
                result."/>
     <parameter name="allowEmptySearchResult"
                description="Boolean value to allow empty Search Result or throw Exception"/>
+    <parameter name="responseVariable" description="The name of the variable to which the response should be stored."/>
+    <parameter name="overwriteBody" description="Replace the Message Body in Message Context with the response of the operation."/>
     <sequence>
         <property expression="$func:onlyOneReference" name="onlyOneReference" scope="default"
                   type="STRING"/>

@@ -24,15 +24,16 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
-import org.wso2.carbon.connector.core.AbstractConnector;
+import org.wso2.integration.connector.core.AbstractConnectorOperation;
+import org.wso2.integration.connector.core.ConnectException;
 
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 
-public class Rename extends AbstractConnector {
+public class Rename extends AbstractConnectorOperation {
 
     @Override
-    public void connect(MessageContext messageContext) {
+    public void execute(MessageContext messageContext, String s, Boolean aBoolean) throws ConnectException {
 
         String oldName = (String) getParameter(messageContext, LDAPConstants.OLD_NAME);
         String newName = (String) getParameter(messageContext, LDAPConstants.NEW_NAME);

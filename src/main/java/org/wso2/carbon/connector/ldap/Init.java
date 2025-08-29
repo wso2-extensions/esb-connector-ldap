@@ -19,8 +19,8 @@
 package org.wso2.carbon.connector.ldap;
 
 import org.apache.synapse.MessageContext;
-import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.connector.core.ConnectException;
+import org.wso2.integration.connector.core.AbstractConnector;
+import org.wso2.integration.connector.core.ConnectException;
 
 public class Init extends AbstractConnector {
 

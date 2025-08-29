@@ -16,9 +16,10 @@
 ~  specific language governing permissions and limitations
 ~  under the License.
 -->
-<component name="ldap_auth" type="synapse/template">
+<component name="ldap_auth" type="synapse/template" displayName="Auth">
     <subComponents>
         <component name="authenticate">
+            <displayName>Authenticate</displayName>
             <file>authenticate.xml</file>
             <description>This does authentication of a given user</description>
         </component>

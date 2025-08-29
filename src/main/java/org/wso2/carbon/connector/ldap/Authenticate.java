@@ -30,8 +30,8 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.synapse.MessageContext;
-import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.connector.core.ConnectException;
+import org.wso2.integration.connector.core.AbstractConnector;
+import org.wso2.integration.connector.core.ConnectException;
 
 public class Authenticate extends AbstractConnector {
 
@@ -41,9 +41,9 @@ public class Authenticate extends AbstractConnector {
                 LDAPUtils.lookupContextParams(messageContext, LDAPConstants.PROVIDER_URL);
         String dn = (String) getParameter(messageContext, LDAPConstants.DN);
         String password = (String) getParameter(messageContext, LDAPConstants.PASSWORD);
-        boolean secureConnection = Boolean.valueOf(
+        boolean secureConnection = Boolean.parseBoolean(
                 LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURE_CONNECTION));
-        boolean disableSSLCertificateChecking = Boolean.valueOf(LDAPUtils.lookupContextParams(
+        boolean disableSSLCertificateChecking = Boolean.parseBoolean(LDAPUtils.lookupContextParams(
                 messageContext, LDAPConstants.DISABLE_SSL_CERT_CHECKING));
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
@@ -52,7 +52,7 @@ public class Authenticate extends AbstractConnector {
         OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
         OMElement message = factory.createOMElement(LDAPConstants.MESSAGE, ns);
 
-        Hashtable env = new Hashtable();
+        Hashtable<String, String> env = new Hashtable<>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, LDAPConstants.COM_SUN_JNDI_LDAP_LDAPCTXFACTORY);
         env.put(Context.PROVIDER_URL, providerUrl);
         env.put(Context.SECURITY_PRINCIPAL, dn);
@@ -65,10 +65,8 @@ public class Authenticate extends AbstractConnector {
                     LDAPConstants.ORG_WSO2_CARBON_CONNECTOR_SECURITY_MYSSLSOCKETFACTORY);
         }
 
-        boolean logged = false;
-        DirContext ctx = null;
         try {
-            ctx = new InitialDirContext(env);
+            DirContext ctx = new InitialDirContext(env);
             message.setText(LDAPConstants.SUCCESS);
             result.addChild(message);
             LDAPUtils.preparePayload(messageContext, result);

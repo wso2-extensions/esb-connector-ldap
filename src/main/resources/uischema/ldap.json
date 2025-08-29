@@ -1,0 +1,154 @@
+{
+  "connectorName": "ldap",
+  "connectionName": "LDAP",
+  "title": "LDAP Connection",
+  "help": "<h1>LDAP Connection</h1><p>Use this connection to integrate with an LDAP directory service.</p>",
+  "testConnectionEnabled": false,
+  "elements": [
+    {
+      "type": "attribute",
+      "value": {
+        "name": "connectionName",
+        "displayName": "Connection Name",
+        "inputType": "string",
+        "defaultValue": "LDAP_CONNECTION_1",
+        "required": "false",
+        "helpTip": "The unique name of the connection to LDAP."
+      }
+    },
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "General",
+        "elements": [
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Basic",
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "secureConnection",
+                    "displayName": "Secure Connection",
+                    "inputType": "boolean",
+                    "defaultValue": "false",
+                    "required": "true",
+                    "helpTip": "Boolean value to enable or disable secure connection to LDAP."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "disableSSLCertificateChecking",
+                    "displayName": "Disable SSL Certificate Checking",
+                    "inputType": "boolean",
+                    "defaultValue": "false",
+                    "required": "true",
+                    "helpTip": "Boolean value to disable or enable SSL certificate checking for LDAP."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "providerUrl",
+                    "displayName": "Provider URL",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "URI of the LDAP directory, e.g., ldap://<host>:<port>/"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "securityPrincipal",
+                    "displayName": "Security Principal (Username)",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "Username used to log in to LDAP."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "securityCredentials",
+                    "displayName": "Security Credentials (Password)",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "Password used to log in to LDAP."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "timeout",
+                    "displayName": "Timeout",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "30000",
+                    "required": "false",
+                    "helpTip": "Timeout duration of the LDAP request in milliseconds."
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Connection Pooling",
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "connectionPoolingEnabled",
+                    "displayName": "Enable Connection Pooling",
+                    "inputType": "boolean",
+                    "defaultValue": "false",
+                    "required": "false",
+                    "helpTip": "Enable or disable connection pooling for LDAP."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "connectionPoolingProtocol",
+                    "displayName": "Connection Pooling Protocol",
+                    "inputType": "string",
+                    "defaultValue": "plain",
+                    "required": "false",
+                    "helpTip": "Space-separated protocol types for connection pooling. Valid values: 'plain', 'ssl'."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "connectionPoolingInitSize",
+                    "displayName": "Initial Pool Size",
+                    "inputType": "string",
+                    "defaultValue": "5",
+                    "required": "false",
+                    "helpTip": "Number of connections per connection identity to create initially."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "connectionPoolingMaxSize",
+                    "displayName": "Maximum Pool Size",
+                    "inputType": "string",
+                    "defaultValue": "20",
+                    "required": "false",
+                    "helpTip": "Maximum number of connections per connection identity that can be maintained concurrently."
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

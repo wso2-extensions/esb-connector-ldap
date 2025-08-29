@@ -27,17 +27,17 @@ import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.connector.core.ConnectException;
+import org.wso2.integration.connector.core.AbstractConnectorOperation;
+import org.wso2.integration.connector.core.ConnectException;
 
 import javax.naming.NamingException;
 import javax.naming.directory.*;
 import java.util.Iterator;
 
-public class AddEntry extends AbstractConnector {
+public class AddEntry extends AbstractConnectorOperation {
 
     @Override
-    public void connect(MessageContext messageContext) throws ConnectException {
+    public void execute(MessageContext messageContext, String s, Boolean aBoolean) throws ConnectException {
         String objectClass = (String) getParameter(messageContext, LDAPConstants.OBJECT_CLASS);
         String attributesString = (String) getParameter(messageContext, LDAPConstants.ATTRIBUTES);
         String dn = (String) getParameter(messageContext, LDAPConstants.DN);
@@ -47,15 +47,15 @@ public class AddEntry extends AbstractConnector {
         OMElement message = factory.createOMElement(LDAPConstants.MESSAGE, ns);
         try {
             DirContext context = LDAPUtils.getDirectoryContext(messageContext);
-            String classes[] = objectClass.split(",");
+            String[] objClasses = objectClass.split(",");
             Attributes entry = new BasicAttributes();
             Attribute obClassAttr = new BasicAttribute(LDAPConstants.OBJECT_CLASS);
-            for (String aClass : classes) {
+            for (String aClass : objClasses) {
                 obClassAttr.add(aClass);
             }
             entry.put(obClassAttr);
             if (StringUtils.isNotEmpty(attributesString)) {
-                JSONObject object = new JSONObject(attributesString);
+                JSONObject object = new JSONObject(LDAPUtils.createJsonObjectString(attributesString.trim()));
                 Iterator keys = object.keys();
                 while (keys.hasNext()) {
                     String key = (String) keys.next();

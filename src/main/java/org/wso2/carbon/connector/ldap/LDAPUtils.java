@@ -42,7 +42,8 @@ import org.apache.synapse.transport.nhttp.NhttpConstants;
 public class LDAPUtils {
     private static final OMFactory fac = OMAbstractFactory.getOMFactory();
     protected static Log log = LogFactory.getLog(LDAPUtils.class);
-    private static OMNamespace ns = fac.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE, LDAPConstants.NAMESPACE);
+    private static final OMNamespace ns = fac.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE,
+            LDAPConstants.NAMESPACE);
 
     protected static DirContext getDirectoryContext(MessageContext messageContext)
             throws NamingException {
@@ -50,12 +51,12 @@ public class LDAPUtils {
         String securityPrincipal = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURITY_PRINCIPAL);
         String securityCredentials = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURITY_CREDENTIALS);
         boolean secureConnection = Boolean
-                .valueOf(LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURE_CONNECTION));
-        boolean disableSSLCertificateChecking = Boolean.valueOf(LDAPUtils.lookupContextParams(
+                .parseBoolean(LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURE_CONNECTION));
+        boolean disableSSLCertificateChecking = Boolean.parseBoolean(LDAPUtils.lookupContextParams(
                 messageContext, LDAPConstants.DISABLE_SSL_CERT_CHECKING));
         String timeout = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.TIMEOUT);
         boolean connectionPoolingEnabled = Boolean
-                .valueOf(LDAPUtils.lookupContextParams(messageContext, LDAPConstants.CONNECTION_POOLING_ENABLED));
+                .parseBoolean(LDAPUtils.lookupContextParams(messageContext, LDAPConstants.CONNECTION_POOLING_ENABLED));
         String connectionPoolingProtocol = LDAPUtils
                 .lookupContextParams(messageContext, LDAPConstants.CONNECTION_POOLING_PROTOCOL);
         String connectionPoolingInitSize = LDAPUtils
@@ -63,7 +64,7 @@ public class LDAPUtils {
         String connectionPoolingMaxSize = LDAPUtils
                 .lookupContextParams(messageContext, LDAPConstants.CONNECTION_POOLING_MAX_SIZE);
 
-        Hashtable env = new Hashtable();
+        Hashtable<String, String> env = new Hashtable<>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, LDAPConstants.COM_SUN_JNDI_LDAP_LDAPCTXFACTORY);
         env.put(Context.PROVIDER_URL, providerUrl);
         env.put(Context.SECURITY_PRINCIPAL, securityPrincipal);
@@ -92,10 +93,7 @@ public class LDAPUtils {
                 env.put(LDAPConstants.COM_SUN_JNDI_LDAP_CONNECT_POOL_MAXSIZE, connectionPoolingMaxSize);
             }
         }
-
-        DirContext ctx = null;
-        ctx = new InitialDirContext(env);
-        return ctx;
+        return new InitialDirContext(env);
     }
 
     public static String lookupContextParams(MessageContext ctxt, String paramName) {
@@ -148,5 +146,13 @@ public class LDAPUtils {
         messageContext.setProperty(SynapseConstants.ERROR_EXCEPTION, e);
         messageContext.setFaultResponse(true);
         preparePayload(messageContext, e, errorCode);
+    }
+
+    public static String createJsonObjectString(String attributesString) {
+        int index = attributesString.indexOf("{");
+        if (index > 0) {
+            return attributesString.substring(index, attributesString.length() - index);
+        }
+        return attributesString;
     }
 }

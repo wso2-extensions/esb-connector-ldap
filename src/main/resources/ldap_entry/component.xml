@@ -16,25 +16,30 @@
 ~  specific language governing permissions and limitations
 ~  under the License.
 -->
-<component name="ldap_entry" type="synapse/template">
+<component name="ldap_entry" type="synapse/template" displayName="Entry">
     <subComponents>
         <component name="addEntry">
+            <displayName>Add</displayName>
             <file>addEntry.xml</file>
             <description>This adds new entries to ldap directory</description>
         </component>
         <component name="searchEntry">
+            <displayName>Search</displayName>
             <file>searchEntry.xml</file>
             <description>This searches entries in ldap directory</description>
         </component>
         <component name="updateEntry">
+            <displayName>Update</displayName>
             <file>updateEntry.xml</file>
             <description>This updates entries in ldap directory</description>
         </component>
         <component name="updateName">
+            <displayName>Update Name</displayName>
             <file>updateName.xml</file>
             <description>This updates names in ldap directory</description>
         </component>
         <component name="deleteEntry">
+            <displayName>Delete</displayName>
             <file>deleteEntry.xml</file>
             <description>This deletes entries in ldap directory</description>
         </component>

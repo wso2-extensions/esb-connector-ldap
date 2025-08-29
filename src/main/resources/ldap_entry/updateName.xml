@@ -19,6 +19,8 @@
 <template name="updateName" xmlns="http://ws.apache.org/ns/synapse">
     <parameter name="oldName" description="Fully qualified old name"/>
     <parameter name="newName" description="Fully qualified new name"/>
+    <parameter name="responseVariable" description="The name of the variable to which the response should be stored."/>
+    <parameter name="overwriteBody" description="Replace the Message Body in Message Context with the response of the operation."/>
     <sequence>
         <property expression="$func:oldName" name="oldName" scope="default" type="STRING"/>
         <property expression="$func:newName" name="newName" scope="default" type="STRING"/>
