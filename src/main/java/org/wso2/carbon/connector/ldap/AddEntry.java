@@ -37,8 +37,6 @@ import java.util.Iterator;
 
 public class AddEntry extends AbstractConnectorOperation {
 
-    private static final String UNICODE_PWD_ATTRIBUTE = "unicodePwd";
-    private static final String PASSWORD_QUOTE_FORMAT = "\"%s\"";
 
     @Override
     public void execute(MessageContext messageContext, String s, Boolean aBoolean) throws ConnectException {
@@ -67,9 +65,9 @@ public class AddEntry extends AbstractConnectorOperation {
                     Attribute newAttr = new BasicAttribute(key);
 
                     // Special handling for Active Directory unicodePwd attribute
-                    if (UNICODE_PWD_ATTRIBUTE.equalsIgnoreCase(key)) {
+                    if (LDAPConstants.UNICODE_PWD_ATTRIBUTE.equalsIgnoreCase(key)) {
                         // AD requires password to be quoted and UTF-16LE encoded
-                        String quotedPassword = String.format(PASSWORD_QUOTE_FORMAT, val);
+                        String quotedPassword = String.format(LDAPConstants.PASSWORD_QUOTE_FORMAT, val);
                         byte[] unicodePwdBytes = quotedPassword.getBytes(StandardCharsets.UTF_16LE);
                         newAttr.add(unicodePwdBytes);
                     } else {
