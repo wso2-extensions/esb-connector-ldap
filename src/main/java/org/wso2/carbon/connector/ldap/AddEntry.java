@@ -32,9 +32,11 @@ import org.wso2.integration.connector.core.ConnectException;
 
 import javax.naming.NamingException;
 import javax.naming.directory.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
 public class AddEntry extends AbstractConnectorOperation {
+
 
     @Override
     public void execute(MessageContext messageContext, String s, Boolean aBoolean) throws ConnectException {
@@ -61,7 +63,17 @@ public class AddEntry extends AbstractConnectorOperation {
                     String key = (String) keys.next();
                     String val = object.getString(key);
                     Attribute newAttr = new BasicAttribute(key);
-                    newAttr.add(val);
+
+                    // Special handling for Active Directory unicodePwd attribute
+                    if (LDAPConstants.UNICODE_PWD_ATTRIBUTE.equalsIgnoreCase(key)) {
+                        // AD requires password to be quoted and UTF-16LE encoded
+                        String quotedPassword = String.format(LDAPConstants.PASSWORD_QUOTE_FORMAT, val);
+                        byte[] unicodePwdBytes = quotedPassword.getBytes(StandardCharsets.UTF_16LE);
+                        newAttr.add(unicodePwdBytes);
+                    } else {
+                        newAttr.add(val);
+                    }
+
                     entry.put(newAttr);
                 }
             }
