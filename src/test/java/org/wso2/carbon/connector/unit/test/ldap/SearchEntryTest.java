@@ -149,6 +149,28 @@ public class SearchEntryTest {
         }
     }
 
+    @Test
+    public void testPagedSearch() throws Exception {
+        ldap.createSampleEntity();
+        try {
+            templateContext.getMappedValues().put(LDAPConstants.FILTERS, "{}");
+            templateContext.getMappedValues().put(LDAPConstants.OBJECT_CLASS, "inetOrgPerson");
+            templateContext.getMappedValues().put(LDAPConstants.PAGE_SIZE, "10");
+            functionStack.push(templateContext);
+            messageContext.setProperty("_SYNAPSE_FUNCTION_STACK", functionStack);
+            init.connect(messageContext);
+            searchEntry.connect(messageContext);
+            OMElement result = messageContext.getEnvelope().getBody().getFirstElement();
+            Assert.assertNotNull(result);
+            OMElement entry = result.getFirstElement();
+            Assert.assertNotNull(entry);
+            String userId = ((OMElement) (entry.getChildrenWithLocalName("uid")).next()).getText();
+            Assert.assertEquals(userId, ldap.testUserId);
+        } finally {
+            ldap.deleteSampleEntry();
+        }
+    }
+
     @AfterMethod
     protected void cleanup() {
         ldap.cleanup();

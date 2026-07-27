@@ -31,6 +31,8 @@
                result."/>
     <parameter name="allowEmptySearchResult"
                description="Boolean value to allow empty Search Result or throw Exception"/>
+    <parameter name="pageSize"
+               description="Number of entries to fetch per page from the server (RFC 2696 Simple Paged Results). Required when the server enforces a size limit (e.g. Active Directory caps results at 1000). Paging is handled internally; the full result set is returned in a single response. Omit or leave empty to disable paging."/>
     <sequence>
         <property expression="$func:onlyOneReference" name="onlyOneReference" scope="default"
                   type="STRING"/>
@@ -41,6 +43,7 @@
         <property expression="$func:limit" name="limit" scope="default" type="STRING"/>
         <property expression="$func:allowEmptySearchResult" name="allowEmptySearchResult" scope="default"
                   type="STRING"/>
+        <property expression="$func:pageSize" name="pageSize" scope="default" type="STRING"/>
 
         <class name="org.wso2.carbon.connector.ldap.SearchEntry"/>
     </sequence>
