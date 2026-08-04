@@ -84,7 +84,7 @@
               "inputType": "stringOrExpression",
               "defaultValue": "10",
               "required": "false",
-              "helpTip": "Maximum number of search results to return. Use 0 for unlimited. Ignored when Page Size is set."
+              "helpTip": "Maximum number of search results to return. Use 0 for unlimited. When Page Size is set, this acts as a total result cap across all pages."
             }
           },
           {
@@ -95,7 +95,7 @@
               "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
-              "helpTip": "Number of entries to fetch per page using RFC 2696 Simple Paged Results. Use this to bypass server-side size limits (e.g. Active Directory's default 1000-entry cap). All pages are fetched internally and the full result set is returned. Must be a positive integer. When set, Result Limit and Only One Reference are ignored."
+              "helpTip": "Number of entries to fetch per page using RFC 2696 Simple Paged Results. Use this to bypass server-side size limits (e.g. Active Directory's default 1000-entry cap). All pages are fetched internally and the full result set is returned. Must be a positive integer."
             }
           },
           {
