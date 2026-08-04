@@ -95,27 +95,38 @@ public class SearchEntry extends AbstractConnector {
                     handleException("Invalid value for pageSize: " + pageSizeStr, ex, messageContext);
                     return;
                 }
+                if (pageSize <= 0) {
+                    handleException("pageSize must be a positive integer, got: " + pageSize, messageContext);
+                    return;
+                }
 
                 LdapContext ldapContext = LDAPUtils.getLdapContext(messageContext);
                 try {
                     byte[] cookie = null;
                     boolean hasResults = false;
+                    int totalCollected = 0;
+                    boolean limitReached = false;
                     do {
                         ldapContext.setRequestControls(new Control[]{
                                 new PagedResultsControl(pageSize, cookie, Control.CRITICAL)
                         });
                         NamingEnumeration<SearchResult> results = searchInUserBase(dn, searchFilter,
-                                returnAttributes, searchScope, ldapContext, limit);
+                                returnAttributes, searchScope, ldapContext, 0);
                         if (results != null) {
                             while (results.hasMoreElements()) {
                                 hasResults = true;
                                 SearchResult entityResult = results.next();
                                 processObjectGuid(entityResult);
                                 result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
+                                totalCollected++;
+                                if (limit > 0 && totalCollected >= limit) {
+                                    limitReached = true;
+                                    break;
+                                }
                             }
                         }
                         cookie = extractPagedCookie(ldapContext);
-                    } while (cookie != null && cookie.length > 0);
+                    } while (!limitReached && cookie != null && cookie.length > 0);
 
                     if (!hasResults && !allowEmptySearchResult) {
                         throw new NamingException("No matching result or entity found for this search");
