@@ -25,6 +25,8 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
+import javax.naming.ldap.InitialLdapContext;
+import javax.naming.ldap.LdapContext;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -46,6 +48,15 @@ public class LDAPUtils {
 
     protected static DirContext getDirectoryContext(MessageContext messageContext)
             throws NamingException {
+        return new InitialDirContext(buildEnvironment(messageContext));
+    }
+
+    protected static LdapContext getLdapContext(MessageContext messageContext)
+            throws NamingException {
+        return new InitialLdapContext(buildEnvironment(messageContext), null);
+    }
+
+    private static Hashtable<String, String> buildEnvironment(MessageContext messageContext) {
         String providerUrl = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.PROVIDER_URL);
         String securityPrincipal = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURITY_PRINCIPAL);
         String securityCredentials = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.SECURITY_CREDENTIALS);
@@ -63,14 +74,14 @@ public class LDAPUtils {
         String connectionPoolingMaxSize = LDAPUtils
                 .lookupContextParams(messageContext, LDAPConstants.CONNECTION_POOLING_MAX_SIZE);
 
-        Hashtable env = new Hashtable();
+        Hashtable<String, String> env = new Hashtable<>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, LDAPConstants.COM_SUN_JNDI_LDAP_LDAPCTXFACTORY);
         env.put(Context.PROVIDER_URL, providerUrl);
         env.put(Context.SECURITY_PRINCIPAL, securityPrincipal);
         env.put(Context.SECURITY_CREDENTIALS, securityCredentials);
         env.put(LDAPConstants.JAVA_NAMING_LDAP_ATTRIBUTE_BINARY, LDAPConstants.OBJECT_GUID);
 
-        if(StringUtils.isNotEmpty(timeout)) {
+        if (StringUtils.isNotEmpty(timeout)) {
             env.put(LDAPConstants.COM_JAVA_JNDI_LDAP_READ_TIMEOUT, timeout);
         }
         if (secureConnection) {
@@ -92,10 +103,7 @@ public class LDAPUtils {
                 env.put(LDAPConstants.COM_SUN_JNDI_LDAP_CONNECT_POOL_MAXSIZE, connectionPoolingMaxSize);
             }
         }
-
-        DirContext ctx = null;
-        ctx = new InitialDirContext(env);
-        return ctx;
+        return env;
     }
 
     public static String lookupContextParams(MessageContext ctxt, String paramName) {
