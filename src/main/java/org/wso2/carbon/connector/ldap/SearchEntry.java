@@ -18,6 +18,10 @@
 
 package org.wso2.carbon.connector.ldap;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Iterator;
+
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -25,13 +29,17 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.naming.ldap.Control;
+import javax.naming.ldap.LdapContext;
+import javax.naming.ldap.PagedResultsControl;
+import javax.naming.ldap.PagedResultsResponseControl;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
-import org.apache.commons.logging.Log;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
@@ -39,9 +47,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.integration.connector.core.AbstractConnectorOperation;
 import org.wso2.integration.connector.core.ConnectException;
-
-import java.nio.ByteBuffer;
-import java.util.Iterator;
 
 public class SearchEntry extends AbstractConnectorOperation {
     protected static Log log = LogFactory.getLog(SearchEntry.class);
@@ -67,71 +72,141 @@ public class SearchEntry extends AbstractConnectorOperation {
                 log.error("Invalid value specified for Search limit. Setting default limit value of 0 (unlimited)");
             }
         }
-
         boolean onlyOneReference = Boolean.parseBoolean(
                 (String) getParameter(messageContext, LDAPConstants.ONLY_ONE_REFERENCE));
         boolean allowEmptySearchResult = Boolean.parseBoolean(
                 (String) getParameter(messageContext, LDAPConstants.ALLOW_EMPTY_SEARCH_RESULT));
+        String pageSizeStr = (String) getParameter(messageContext, LDAPConstants.PAGE_SIZE);
+
         OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE,
-                LDAPConstants.NAMESPACE);
+        OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE, LDAPConstants.NAMESPACE);
         OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
+
         try {
-            DirContext context = LDAPUtils.getDirectoryContext(messageContext);
             String searchFilter = generateSearchFilter(objectClass, filter, messageContext);
-            try {
-                NamingEnumeration<SearchResult> results = searchInUserBase(dn, searchFilter, returnAttributes,
-                                                                           searchScope, context, limit);
-                SearchResult entityResult;
-                if (!onlyOneReference) {
-                    if (results != null && results.hasMore()) {
-                        while (results.hasMoreElements()) {
-                            entityResult = results.next();
-                            Attributes attributes = entityResult.getAttributes();
-                            if (attributes != null) {
-                                Attribute attribute = attributes.get(LDAPConstants.OBJECT_GUID);
-                                if (attribute != null) {
 
-                                    Object attObject = attribute.get(0);
-                                    final byte[] bytes = (byte[]) attObject;
+            if (!StringUtils.isEmpty(pageSizeStr)) {
+                // RFC 2696: fetch all pages on a single connection and return the full result set.
+                // Paging is internal — it exists to satisfy server-side size limits (e.g. AD's 1000
+                // entry cap) without requiring the caller to manage stateful cookies across calls.
+                int pageSize;
+                try {
+                    pageSize = Integer.parseInt(pageSizeStr);
+                } catch (NumberFormatException ex) {
+                    handleException("Invalid value for pageSize: " + pageSizeStr, ex, messageContext);
+                    return;
+                }
+                if (pageSize <= 0) {
+                    handleException("pageSize must be a positive integer, got: " + pageSize, messageContext);
+                    return;
+                }
 
-                                    // https://community.oracle.com/thread/1157698
-                                    // Represent objectGUID in UUID
-                                    if (bytes.length == 16) {
-                                        final ByteBuffer bb = ByteBuffer.wrap(swapBytes(bytes));
-                                        String attr = new java.util.UUID(bb.getLong(), bb.getLong()).toString();
-                                        entityResult.getAttributes().put(LDAPConstants.OBJECT_GUID, attr);
-                                    }
+                LdapContext ldapContext = LDAPUtils.getLdapContext(messageContext);
+                try {
+                    byte[] cookie = null;
+                    boolean hasResults = false;
+                    int totalCollected = 0;
+                    boolean limitReached = false;
+                    do {
+                        ldapContext.setRequestControls(new Control[]{
+                                new PagedResultsControl(pageSize, cookie, Control.CRITICAL)
+                        });
+                        NamingEnumeration<SearchResult> results = searchInUserBase(dn, searchFilter,
+                                returnAttributes, searchScope, ldapContext, 0);
+                        if (results != null) {
+                            while (results.hasMoreElements()) {
+                                hasResults = true;
+                                SearchResult entityResult = results.next();
+                                processObjectGuid(entityResult);
+                                result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
+                                totalCollected++;
+                                if (limit > 0 && totalCollected >= limit) {
+                                    limitReached = true;
+                                    break;
                                 }
                             }
-
-                            result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
                         }
-                    } else {
-                        if (!allowEmptySearchResult) {
+                        cookie = extractPagedCookie(ldapContext);
+                    } while (!limitReached && cookie != null && cookie.length > 0);
+
+                    if (!hasResults && !allowEmptySearchResult) {
+                        throw new NamingException("No matching result or entity found for this search");
+                    }
+                    LDAPUtils.preparePayload(messageContext, result);
+                } catch (NamingException e) {
+                    LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.SEARCH_ERROR, e);
+                    throw new SynapseException(e);
+                } catch (IOException e) {
+                    LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.SEARCH_ERROR, e);
+                    throw new SynapseException(e);
+                } finally {
+                    try { ldapContext.close(); } catch (NamingException ignored) {}
+                }
+            } else {
+                // Standard non-paged search
+                DirContext context = LDAPUtils.getDirectoryContext(messageContext);
+                try {
+                    NamingEnumeration<SearchResult> results = searchInUserBase(dn, searchFilter,
+                            returnAttributes, searchScope, context, limit);
+                    if (!onlyOneReference) {
+                        if (results != null && results.hasMore()) {
+                            while (results.hasMoreElements()) {
+                                SearchResult entityResult = results.next();
+                                processObjectGuid(entityResult);
+                                result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
+                            }
+                        } else if (!allowEmptySearchResult) {
                             throw new NamingException("No matching result or entity found for this search");
                         }
+                    } else {
+                        SearchResult entityResult = makeSureOnlyOneMatch(results, allowEmptySearchResult);
+                        result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
                     }
-                } else {
-                    entityResult = makeSureOnlyOneMatch(results, allowEmptySearchResult);
-                    result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
+                    LDAPUtils.preparePayload(messageContext, result);
+                } catch (NamingException e) {
+                    LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.SEARCH_ERROR, e);
+                    throw new SynapseException(e);
+                } finally {
+                    try { context.close(); } catch (NamingException ignored) {}
                 }
-                LDAPUtils.preparePayload(messageContext, result);
-                if (context != null) {
-                    context.close();
-                }
-            } catch (NamingException e) { //LDAP Errors are catched
-                LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.SEARCH_ERROR, e);
-                throw new SynapseException(e);
             }
-        } catch (NamingException e) { //Authentication failures are catched
+        } catch (NamingException e) { // Authentication failures from getLdapContext/getDirectoryContext
             LDAPUtils.handleErrorResponse(messageContext, LDAPConstants.ErrorConstants.INVALID_LDAP_CREDENTIALS, e);
             throw new SynapseException(e);
         }
     }
 
-    private OMElement prepareNode(SearchResult entityResult, OMFactory factory, OMNamespace ns, String[] returnAttributes)
-            throws NamingException {
+    private void processObjectGuid(SearchResult entityResult) throws NamingException {
+        Attributes attributes = entityResult.getAttributes();
+        if (attributes != null) {
+            Attribute attribute = attributes.get(LDAPConstants.OBJECT_GUID);
+            if (attribute != null) {
+                Object attObject = attribute.get(0);
+                final byte[] bytes = (byte[]) attObject;
+                // https://community.oracle.com/thread/1157698 — objectGUID bytes are not big-endian
+                if (bytes.length == 16) {
+                    final ByteBuffer bb = ByteBuffer.wrap(swapBytes(bytes));
+                    String attr = new java.util.UUID(bb.getLong(), bb.getLong()).toString();
+                    entityResult.getAttributes().put(LDAPConstants.OBJECT_GUID, attr);
+                }
+            }
+        }
+    }
+
+    private byte[] extractPagedCookie(LdapContext ldapContext) throws NamingException {
+        Control[] responseControls = ldapContext.getResponseControls();
+        if (responseControls != null) {
+            for (Control control : responseControls) {
+                if (control instanceof PagedResultsResponseControl) {
+                    return ((PagedResultsResponseControl) control).getCookie();
+                }
+            }
+        }
+        return null;
+    }
+
+    private OMElement prepareNode(SearchResult entityResult, OMFactory factory, OMNamespace ns,
+                                  String[] returnAttributes) throws NamingException {
         Attributes attributes = entityResult.getAttributes();
         Attribute attribute;
         OMElement entry = factory.createOMElement(LDAPConstants.ENTRY, ns);
@@ -249,9 +324,7 @@ public class SearchEntry extends AbstractConnectorOperation {
         }
         userSearchControl.setCountLimit(limit);
         userSearchControl.setSearchScope(searchScope);
-        NamingEnumeration<SearchResult> userSearchResults;
-        userSearchResults = rootContext.search(dn, searchFilter, userSearchControl);
-        return userSearchResults;
+        return rootContext.search(dn, searchFilter, userSearchControl);
 
     }
 
