@@ -15,55 +15,13 @@
     ],
     "releases": [
         {
-            "tagName": "v2.0.1",
+            "tagName": "v2.0.2",
             "products": [
                 "MI 4.4.0",
                 "MI 4.5.0",
                 "MI 4.6.0"
             ],
             "operations": [
-                {
-                    "name": "updateEntry",
-                    "description": "Update LDAP Entry",
-                    "params": [
-                        {
-                            "name": "dn",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "The distinguished name (DN) of the LDAP entry to update. Example: cn=John Doe,ou=Users,dc=example,dc=com"
-                        },
-                        {
-                            "name": "attributes",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "The attributes to update for the LDAP entry, provided as key-value pairs. Example: {\"mail\":\"john.doe@example.com\",\"telephoneNumber\"=\"123456789\"}"
-                        },
-                        {
-                            "name": "mode",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "REPLACE",
-                            "description": "The update mode: ADD to add new attributes, REPLACE to overwrite existing values, or REMOVE to delete attributes."
-                        },
-                        {
-                            "name": "responseVariable",
-                            "type": "string",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "Name of the variable to which the output of the operation should be assigned."
-                        },
-                        {
-                            "name": "overwriteBody",
-                            "type": "checkbox",
-                            "required": false,
-                            "defaultValue": "false",
-                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
-                        }
-                    ],
-                    "isHidden": false
-                },
                 {
                     "name": "searchEntry",
                     "description": "Search LDAP Entry",
@@ -101,7 +59,14 @@
                             "type": "stringOrExpression",
                             "required": false,
                             "defaultValue": "10",
-                            "description": "Maximum number of search results to return. Use 0 for unlimited."
+                            "description": "Maximum number of search results to return. Use 0 for unlimited. When Page Size is set, this acts as a total result cap across all pages."
+                        },
+                        {
+                            "name": "pageSize",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Number of entries to fetch per page using RFC 2696 Simple Paged Results. Use this to bypass server-side size limits (e.g. Active Directory's default 1000-entry cap). All pages are fetched internally and the full result set is returned. Must be a positive integer."
                         },
                         {
                             "name": "scope",
@@ -115,7 +80,7 @@
                             "type": "checkbox",
                             "required": false,
                             "defaultValue": "false",
-                            "description": "If true, ensures only one reference is returned."
+                            "description": "If true, ensures only one reference is returned. Ignored when Page Size is set."
                         },
                         {
                             "name": "allowEmptySearchResult",
@@ -123,6 +88,41 @@
                             "required": false,
                             "defaultValue": "true",
                             "description": "If true, no exception will be thrown when the search returns no result."
+                        },
+                        {
+                            "name": "responseVariable",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Name of the variable to which the output of the operation should be assigned."
+                        },
+                        {
+                            "name": "overwriteBody",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
+                        }
+                    ],
+                    "isHidden": false
+                },
+                {
+                    "name": "authenticate",
+                    "description": "Authenticate LDAP User",
+                    "params": [
+                        {
+                            "name": "dn",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The distinguished name (DN) of the LDAP entry to authenticate. Example: cn=John Doe,ou=Users,dc=example,dc=com"
+                        },
+                        {
+                            "name": "password",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Password of the LDAP user for authentication."
                         },
                         {
                             "name": "responseVariable",
@@ -212,22 +212,29 @@
                     "isHidden": false
                 },
                 {
-                    "name": "updateName",
-                    "description": "Rename LDAP Entry",
+                    "name": "updateEntry",
+                    "description": "Update LDAP Entry",
                     "params": [
                         {
-                            "name": "oldName",
+                            "name": "dn",
                             "type": "stringOrExpression",
                             "required": true,
                             "defaultValue": "",
-                            "description": "The current fully qualified distinguished name (DN) of the LDAP entry. Example: cn=John Doe,ou=Users,dc=example,dc=com"
+                            "description": "The distinguished name (DN) of the LDAP entry to update. Example: cn=John Doe,ou=Users,dc=example,dc=com"
                         },
                         {
-                            "name": "newName",
+                            "name": "attributes",
                             "type": "stringOrExpression",
                             "required": true,
                             "defaultValue": "",
-                            "description": "The new fully qualified distinguished name (DN) for the LDAP entry. Example: cn=John Smith,ou=Users,dc=example,dc=com"
+                            "description": "The attributes to update for the LDAP entry, provided as key-value pairs. Example: {\"mail\":\"john.doe@example.com\",\"telephoneNumber\"=\"123456789\"}"
+                        },
+                        {
+                            "name": "mode",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "REPLACE",
+                            "description": "The update mode: ADD to add new attributes, REPLACE to overwrite existing values, or REMOVE to delete attributes."
                         },
                         {
                             "name": "responseVariable",
@@ -247,22 +254,22 @@
                     "isHidden": false
                 },
                 {
-                    "name": "authenticate",
-                    "description": "Authenticate LDAP User",
+                    "name": "updateName",
+                    "description": "Rename LDAP Entry",
                     "params": [
                         {
-                            "name": "dn",
+                            "name": "oldName",
                             "type": "stringOrExpression",
                             "required": true,
                             "defaultValue": "",
-                            "description": "The distinguished name (DN) of the LDAP entry to authenticate. Example: cn=John Doe,ou=Users,dc=example,dc=com"
+                            "description": "The current fully qualified distinguished name (DN) of the LDAP entry. Example: cn=John Doe,ou=Users,dc=example,dc=com"
                         },
                         {
-                            "name": "password",
+                            "name": "newName",
                             "type": "stringOrExpression",
                             "required": true,
                             "defaultValue": "",
-                            "description": "Password of the LDAP user for authentication."
+                            "description": "The new fully qualified distinguished name (DN) for the LDAP entry. Example: cn=John Smith,ou=Users,dc=example,dc=com"
                         },
                         {
                             "name": "responseVariable",
