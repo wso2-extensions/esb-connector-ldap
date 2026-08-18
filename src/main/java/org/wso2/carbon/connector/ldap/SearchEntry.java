@@ -20,7 +20,11 @@ package org.wso2.carbon.connector.ldap;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -81,6 +85,8 @@ public class SearchEntry extends AbstractConnectorOperation {
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMNamespace ns = factory.createOMNamespace(LDAPConstants.CONNECTOR_NAMESPACE, LDAPConstants.NAMESPACE);
         OMElement result = factory.createOMElement(LDAPConstants.RESULT, ns);
+        Set<String> binaryAttributes = parseBinaryAttributes(
+                LDAPUtils.lookupContextParams(messageContext, LDAPConstants.BINARY_ATTRIBUTES));
 
         try {
             String searchFilter = generateSearchFilter(objectClass, filter, messageContext);
@@ -118,7 +124,7 @@ public class SearchEntry extends AbstractConnectorOperation {
                                 hasResults = true;
                                 SearchResult entityResult = results.next();
                                 processObjectGuid(entityResult);
-                                result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
+                                result.addChild(prepareNode(entityResult, factory, ns, returnAttributes, binaryAttributes));
                                 totalCollected++;
                                 if (limit > 0 && totalCollected >= limit) {
                                     limitReached = true;
@@ -153,14 +159,15 @@ public class SearchEntry extends AbstractConnectorOperation {
                             while (results.hasMoreElements()) {
                                 SearchResult entityResult = results.next();
                                 processObjectGuid(entityResult);
-                                result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
+                                result.addChild(prepareNode(entityResult, factory, ns, returnAttributes, binaryAttributes));
                             }
                         } else if (!allowEmptySearchResult) {
                             throw new NamingException("No matching result or entity found for this search");
                         }
                     } else {
                         SearchResult entityResult = makeSureOnlyOneMatch(results, allowEmptySearchResult);
-                        result.addChild(prepareNode(entityResult, factory, ns, returnAttributes));
+                        processObjectGuid(entityResult);
+                        result.addChild(prepareNode(entityResult, factory, ns, returnAttributes, binaryAttributes));
                     }
                     LDAPUtils.preparePayload(messageContext, result);
                 } catch (NamingException e) {
@@ -206,7 +213,7 @@ public class SearchEntry extends AbstractConnectorOperation {
     }
 
     private OMElement prepareNode(SearchResult entityResult, OMFactory factory, OMNamespace ns,
-                                  String[] returnAttributes) throws NamingException {
+                                  String[] returnAttributes, Set<String> binaryAttributes) throws NamingException {
         Attributes attributes = entityResult.getAttributes();
         Attribute attribute;
         OMElement entry = factory.createOMElement(LDAPConstants.ENTRY, ns);
@@ -221,16 +228,8 @@ public class SearchEntry extends AbstractConnectorOperation {
                 NamingEnumeration ne = attr.getAll();
                 while (ne.hasMoreElements()) {
                     Object element = ne.next();
-                    String elementType = element.getClass().toString();
-                    String value = "";
-                    if (elementType.equals("class java.lang.String")) {
-                        value = element.toString();
-                    } else if (elementType.equals("class [B")) {
-                        Attribute attributeValue = attributes.get(id);
-                        value = new String((byte[]) attributeValue.get());
-                    }
                     OMElement omElement = factory.createOMElement(id, ns);
-                    omElement.setText(value);
+                    omElement.setText(getAttributeValue(element, id, binaryAttributes));
                     entry.addChild(omElement);
                 }
             }
@@ -247,22 +246,41 @@ public class SearchEntry extends AbstractConnectorOperation {
                     NamingEnumeration ne = attribute.getAll();
                     while (ne.hasMoreElements()) {
                         Object element = ne.next();
-                        String elementType = element.getClass().toString();
-                        String value = "";
-                        if (elementType.equals("class java.lang.String")) {
-                            value = (String) element.toString();
-                        } else if(elementType.equals("class [B")) {
-                            Attribute attributeValue = attributes.get(returnAttributes[i]);
-                            value = new String((byte[]) attributeValue.get());
-                        }
                         OMElement attr = factory.createOMElement(returnAttributes[i], ns);
-                        attr.setText(value);
+                        attr.setText(getAttributeValue(element, returnAttributes[i], binaryAttributes));
                         entry.addChild(attr);
                     }
                 }
             }
         }
         return entry;
+    }
+
+    private Set<String> parseBinaryAttributes(String binaryAttributes) {
+        Set<String> binaryAttributeSet = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        binaryAttributeSet.add(LDAPConstants.OBJECT_GUID);
+        if (StringUtils.isNotBlank(binaryAttributes)) {
+            binaryAttributeSet.addAll(Arrays.asList(binaryAttributes.trim().split("\\s+")));
+        }
+        return binaryAttributeSet;
+    }
+
+    private String getAttributeValue(Object element, String attributeName, Set<String> binaryAttributes) {
+        String elementType = element.getClass().toString();
+        if (elementType.equals("class java.lang.String")) {
+            return (String) element;
+        }
+        if (elementType.equals("class [B")) {
+            // Strip attribute options (e.g. "userCertificate;binary") before matching configured names
+            // Only attributes defined in binaryAttributes will be base64 encoded
+            int optionIndex = attributeName.indexOf(';');
+            String name = optionIndex >= 0 ? attributeName.substring(0, optionIndex) : attributeName;
+            if (binaryAttributes.contains(name)) {
+                return Base64.getEncoder().encodeToString((byte[]) element);
+            }
+            return new String((byte[]) element);
+        }
+        return "";
     }
 
     private SearchResult makeSureOnlyOneMatch(NamingEnumeration<SearchResult> results,

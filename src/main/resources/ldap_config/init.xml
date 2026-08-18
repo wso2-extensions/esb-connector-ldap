@@ -32,7 +32,8 @@
                description="The string representation of an integer that represents the number of connections per connection identity to create when initially creating a connection for the identity."/>
     <parameter name="connectionPoolingMaxSize"
                description="The string representation of an integer that represents the maximum number of connections per connection identity that can be maintained concurrently."/>
-
+    <parameter name="binaryAttributes"
+               description="A list of space-separated attribute names that should be treated as binary attributes. The values of these attributes will be returned as base64-encoded strings."/>
     <sequence>
         <property expression="$func:secureConnection" name="secureConnection" scope="default"
                   type="STRING"/>
@@ -60,6 +61,7 @@
         <property
                 expression="$func:connectionPoolingMaxSize" name="connectionPoolingMaxSize"
                 scope="default" type="STRING"/>
+        <property expression="$func:binaryAttributes" name="binaryAttributes" scope="default" type="STRING"/>
         <class name="org.wso2.carbon.connector.ldap.Init"/>
     </sequence>
 </template>
