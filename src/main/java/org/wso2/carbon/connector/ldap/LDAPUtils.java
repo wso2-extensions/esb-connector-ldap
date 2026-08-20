@@ -79,7 +79,24 @@ public class LDAPUtils {
         env.put(Context.PROVIDER_URL, providerUrl);
         env.put(Context.SECURITY_PRINCIPAL, securityPrincipal);
         env.put(Context.SECURITY_CREDENTIALS, securityCredentials);
-        env.put(LDAPConstants.JAVA_NAMING_LDAP_ATTRIBUTE_BINARY, LDAPConstants.OBJECT_GUID);
+        // objectGUID must always be declared binary; append it to the user-configured list unless
+        // one of its whitespace-separated tokens already names it (JNDI matches ids case-insensitively)
+        String binaryAttributes = LDAPUtils.lookupContextParams(messageContext, LDAPConstants.BINARY_ATTRIBUTES);
+        String binaryAttributeList = LDAPConstants.OBJECT_GUID;
+        if (StringUtils.isNotBlank(binaryAttributes)) {
+            binaryAttributeList = binaryAttributes.trim();
+            boolean hasObjectGuid = false;
+            for (String token : binaryAttributeList.split("\\s+")) {
+                if (token.equalsIgnoreCase(LDAPConstants.OBJECT_GUID)) {
+                    hasObjectGuid = true;
+                    break;
+                }
+            }
+            if (!hasObjectGuid) {
+                binaryAttributeList = binaryAttributeList + " " + LDAPConstants.OBJECT_GUID;
+            }
+        }
+        env.put(LDAPConstants.JAVA_NAMING_LDAP_ATTRIBUTE_BINARY, binaryAttributeList);
 
         if (StringUtils.isNotEmpty(timeout)) {
             env.put(LDAPConstants.COM_JAVA_JNDI_LDAP_READ_TIMEOUT, timeout);
