@@ -20,12 +20,17 @@ package org.wso2.carbon.connector.ldap;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import javax.naming.CompositeName;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -53,6 +58,11 @@ import org.wso2.carbon.connector.core.AbstractConnector;
 
 public class SearchEntry extends AbstractConnector {
     protected static Log log = LogFactory.getLog(SearchEntry.class);
+
+    // Active Directory returns attributes larger than MaxValRange under a ranged name
+    // (MS-ADTS range option), e.g. member;range=0-1499, terminated by member;range=<n>-*
+    private static final Pattern RANGED_ATTRIBUTE_PATTERN =
+            Pattern.compile("(.+);range=(\\d+)-(\\d+|\\*)", Pattern.CASE_INSENSITIVE);
 
     @Override
     public void connect(MessageContext messageContext) {
@@ -107,6 +117,8 @@ public class SearchEntry extends AbstractConnector {
                 }
 
                 LdapContext ldapContext = LDAPUtils.getLdapContext(messageContext);
+                // Need this when there are range chased attributes
+                DirContext context = LDAPUtils.getDirectoryContext(messageContext);
                 try {
                     byte[] cookie = null;
                     boolean hasResults = false;
@@ -123,7 +135,7 @@ public class SearchEntry extends AbstractConnector {
                                 hasResults = true;
                                 SearchResult entityResult = results.next();
                                 processObjectGuid(entityResult);
-                                result.addChild(prepareNode(entityResult, factory, ns, returnAttributes, binaryAttributes));
+                                result.addChild(prepareNode(entityResult, factory, ns, returnAttributes, binaryAttributes, context));
                                 totalCollected++;
                                 if (limit > 0 && totalCollected >= limit) {
                                     limitReached = true;
@@ -146,6 +158,7 @@ public class SearchEntry extends AbstractConnector {
                     throw new SynapseException(e);
                 } finally {
                     try { ldapContext.close(); } catch (NamingException ignored) {}
+                    try { context.close(); } catch (NamingException ignored) {}
                 }
             } else {
                 // Standard non-paged search
@@ -158,7 +171,8 @@ public class SearchEntry extends AbstractConnector {
                             while (results.hasMoreElements()) {
                                 SearchResult entityResult = results.next();
                                 processObjectGuid(entityResult);
-                                result.addChild(prepareNode(entityResult, factory, ns, returnAttributes, binaryAttributes));
+                                result.addChild(prepareNode(entityResult, factory, ns, returnAttributes,
+                                        binaryAttributes, context));
                             }
                         } else if (!allowEmptySearchResult) {
                             throw new NamingException("No matching result or entity found for this search");
@@ -166,7 +180,8 @@ public class SearchEntry extends AbstractConnector {
                     } else {
                         SearchResult entityResult = makeSureOnlyOneMatch(results, allowEmptySearchResult);
                         processObjectGuid(entityResult);
-                        result.addChild(prepareNode(entityResult, factory, ns, returnAttributes, binaryAttributes));
+                        result.addChild(prepareNode(entityResult, factory, ns, returnAttributes,
+                                binaryAttributes, context));
                     }
                     LDAPUtils.preparePayload(messageContext, result);
                 } catch (NamingException e) {
@@ -211,8 +226,9 @@ public class SearchEntry extends AbstractConnector {
         return null;
     }
 
-    private OMElement prepareNode(SearchResult entityResult, OMFactory factory, OMNamespace ns,
-                                  String[] returnAttributes, Set<String> binaryAttributes) throws NamingException {
+    protected OMElement prepareNode(SearchResult entityResult, OMFactory factory, OMNamespace ns,
+                                    String[] returnAttributes, Set<String> binaryAttributes,
+                                    DirContext context) throws NamingException {
         Attributes attributes = entityResult.getAttributes();
         Attribute attribute;
         OMElement entry = factory.createOMElement(LDAPConstants.ENTRY, ns);
@@ -220,9 +236,20 @@ public class SearchEntry extends AbstractConnector {
         dnattr.setText(entityResult.getNameInNamespace());
         entry.addChild(dnattr);
         if (returnAttributes.length == 0) {
+            Set<String> chasedRangedAttributes = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
             NamingEnumeration<String> ids = attributes.getIDs();
             while (ids.hasMore()) {
                 String id = ids.next();
+                Matcher rangeMatcher = RANGED_ATTRIBUTE_PATTERN.matcher(id);
+                if (rangeMatcher.matches()) {
+                    String baseName = rangeMatcher.group(1);
+                    if (chasedRangedAttributes.add(baseName)) {
+                        addAttributeElements(entry, factory, ns, baseName, binaryAttributes,
+                                collectRangedValues(context, entityResult.getNameInNamespace(),
+                                        baseName, attributes.get(id)));
+                    }
+                    continue;
+                }
                 Attribute attr = attributes.get(id);
                 NamingEnumeration ne = attr.getAll();
                 while (ne.hasMoreElements()) {
@@ -234,25 +261,101 @@ public class SearchEntry extends AbstractConnector {
             }
         } else {
             for (int i = 0; i < returnAttributes.length; i++) {
-                attribute = attributes.get(returnAttributes[i]);
+                String requestedAttribute = returnAttributes[i];
+                attribute = attributes.get(requestedAttribute);
 
                 // Remove ";" from returnAttribute elements to prevent invalid xml generation
-                if (returnAttributes[i].contains(";")) {
-                    String[] splitResult = returnAttributes[i].split("(?=;)");
-                    returnAttributes[i] = splitResult[0];
+                String baseName = requestedAttribute;
+                if (requestedAttribute.contains(";")) {
+                    baseName = requestedAttribute.split("(?=;)")[0];
+                }
+                if ((attribute == null || attribute.size() == 0) && requestedAttribute.equals(baseName)) {
+                    // AD serves attributes larger than MaxValRange under a ranged name, leaving the
+                    // plain one absent or empty; chase the ranges so the caller gets the full set
+                    Attribute rangedAttribute = findRangedAttribute(attributes, baseName);
+                    if (rangedAttribute != null) {
+                        addAttributeElements(entry, factory, ns, baseName, binaryAttributes,
+                                collectRangedValues(context, entityResult.getNameInNamespace(),
+                                        baseName, rangedAttribute));
+                        continue;
+                    }
                 }
                 if (attribute != null) {
                     NamingEnumeration ne = attribute.getAll();
                     while (ne.hasMoreElements()) {
                         Object element = ne.next();
-                        OMElement attr = factory.createOMElement(returnAttributes[i], ns);
-                        attr.setText(getAttributeValue(element, returnAttributes[i], binaryAttributes));
+                        OMElement attr = factory.createOMElement(baseName, ns);
+                        attr.setText(getAttributeValue(element, baseName, binaryAttributes));
                         entry.addChild(attr);
                     }
                 }
             }
         }
         return entry;
+    }
+
+    private void addAttributeElements(OMElement entry, OMFactory factory, OMNamespace ns, String attributeName,
+                                      Set<String> binaryAttributes, List<Object> values) {
+        // Strip attribute options (e.g. "member;binary") so the element name stays a valid xml name
+        int optionIndex = attributeName.indexOf(';');
+        String elementName = optionIndex >= 0 ? attributeName.substring(0, optionIndex) : attributeName;
+        for (Object value : values) {
+            OMElement attr = factory.createOMElement(elementName, ns);
+            attr.setText(getAttributeValue(value, attributeName, binaryAttributes));
+            entry.addChild(attr);
+        }
+    }
+
+    private Attribute findRangedAttribute(Attributes attributes, String baseName) throws NamingException {
+        NamingEnumeration<String> ids = attributes.getIDs();
+        while (ids.hasMore()) {
+            String id = ids.next();
+            Matcher matcher = RANGED_ATTRIBUTE_PATTERN.matcher(id);
+            if (matcher.matches() && matcher.group(1).equalsIgnoreCase(baseName)) {
+                return attributes.get(id);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Collects every value of an attribute that Active Directory has split into ranged
+     * fragments (MS-ADTS range option). Starting from the fragment the search returned,
+     * requests {@code <name>;range=<next>-*} against the entry until the server answers
+     * with the terminal {@code <name>;range=<n>-*} form.
+     *
+     * @param context    directory context used for the follow-up range reads
+     * @param entryDn    full DN of the entry the attribute belongs to
+     * @param baseName   attribute name without the range option
+     * @param firstRange the ranged fragment returned by the original search
+     * @return all values of the attribute, in range order
+     */
+    protected List<Object> collectRangedValues(DirContext context, String entryDn, String baseName,
+                                               Attribute firstRange) throws NamingException {
+        List<Object> values = new ArrayList<>();
+        Attribute current = firstRange;
+        long nextStart = 0;
+        while (current != null) {
+            NamingEnumeration<?> valueEnum = current.getAll();
+            while (valueEnum.hasMoreElements()) {
+                values.add(valueEnum.next());
+            }
+            Matcher matcher = RANGED_ATTRIBUTE_PATTERN.matcher(current.getID());
+            if (!matcher.matches() || "*".equals(matcher.group(3))) {
+                // Terminal form <name>;range=<n>-* : all values have been returned
+                break;
+            }
+            long rangeEnd = Long.parseLong(matcher.group(3));
+            if (rangeEnd + 1 <= nextStart) {
+                // Server did not advance the range; stop instead of looping forever
+                break;
+            }
+            nextStart = rangeEnd + 1;
+            Attributes nextAttributes = context.getAttributes(new CompositeName().add(entryDn),
+                    new String[]{baseName + ";range=" + nextStart + "-*"});
+            current = findRangedAttribute(nextAttributes, baseName);
+        }
+        return values;
     }
 
     private Set<String> parseBinaryAttributes(String binaryAttributes) {
