@@ -143,6 +143,17 @@
                     "required": "false",
                     "helpTip": "Maximum number of connections per connection identity that can be maintained concurrently."
                   }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "binaryAttributes",
+                    "displayName": "Binary Attributes",
+                    "inputType": "string",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "A list of space-separated attribute names that should be treated as binary attributes. The values of these attributes will be returned as base64-encoded strings."
+                  }
                 }
               ]
             }
