@@ -15,13 +15,83 @@
     ],
     "releases": [
         {
-            "tagName": "v2.0.2",
+            "tagName": "v2.0.3",
             "products": [
                 "MI 4.4.0",
                 "MI 4.5.0",
                 "MI 4.6.0"
             ],
             "operations": [
+                {
+                    "name": "authenticate",
+                    "description": "Authenticate LDAP User",
+                    "params": [
+                        {
+                            "name": "dn",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The distinguished name (DN) of the LDAP entry to authenticate. Example: cn=John Doe,ou=Users,dc=example,dc=com"
+                        },
+                        {
+                            "name": "password",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Password of the LDAP user for authentication."
+                        },
+                        {
+                            "name": "responseVariable",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Name of the variable to which the output of the operation should be assigned."
+                        },
+                        {
+                            "name": "overwriteBody",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
+                        }
+                    ],
+                    "isHidden": false
+                },
+                {
+                    "name": "updateName",
+                    "description": "Rename LDAP Entry",
+                    "params": [
+                        {
+                            "name": "oldName",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The current fully qualified distinguished name (DN) of the LDAP entry. Example: cn=John Doe,ou=Users,dc=example,dc=com"
+                        },
+                        {
+                            "name": "newName",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The new fully qualified distinguished name (DN) for the LDAP entry. Example: cn=John Smith,ou=Users,dc=example,dc=com"
+                        },
+                        {
+                            "name": "responseVariable",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Name of the variable to which the output of the operation should be assigned."
+                        },
+                        {
+                            "name": "overwriteBody",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
+                        }
+                    ],
+                    "isHidden": false
+                },
                 {
                     "name": "searchEntry",
                     "description": "Search LDAP Entry",
@@ -107,22 +177,29 @@
                     "isHidden": false
                 },
                 {
-                    "name": "authenticate",
-                    "description": "Authenticate LDAP User",
+                    "name": "addEntry",
+                    "description": "Add LDAP Entry",
                     "params": [
                         {
                             "name": "dn",
                             "type": "stringOrExpression",
                             "required": true,
                             "defaultValue": "",
-                            "description": "The distinguished name (DN) of the LDAP entry to authenticate. Example: cn=John Doe,ou=Users,dc=example,dc=com"
+                            "description": "The distinguished name of the LDAP entry to be added. Example: cn=John Doe,ou=Users,dc=example,dc=com"
                         },
                         {
-                            "name": "password",
+                            "name": "objectClass",
                             "type": "stringOrExpression",
                             "required": true,
                             "defaultValue": "",
-                            "description": "Password of the LDAP user for authentication."
+                            "description": "The object class of the LDAP entry. Example: inetOrgPerson, organizationalUnit"
+                        },
+                        {
+                            "name": "attributes",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "A set of attributes for the new LDAP entry in JSON format. Example: {\"sn\":\"Doe\", \"givenName\":\"John\", \"mail\":\"john.doe@example.com\"}"
                         },
                         {
                             "name": "responseVariable",
@@ -170,48 +247,6 @@
                     "isHidden": false
                 },
                 {
-                    "name": "addEntry",
-                    "description": "Add LDAP Entry",
-                    "params": [
-                        {
-                            "name": "dn",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "The distinguished name of the LDAP entry to be added. Example: cn=John Doe,ou=Users,dc=example,dc=com"
-                        },
-                        {
-                            "name": "objectClass",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "The object class of the LDAP entry. Example: inetOrgPerson, organizationalUnit"
-                        },
-                        {
-                            "name": "attributes",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "A set of attributes for the new LDAP entry in JSON format. Example: {\"sn\":\"Doe\", \"givenName\":\"John\", \"mail\":\"john.doe@example.com\"}"
-                        },
-                        {
-                            "name": "responseVariable",
-                            "type": "string",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "Name of the variable to which the output of the operation should be assigned."
-                        },
-                        {
-                            "name": "overwriteBody",
-                            "type": "checkbox",
-                            "required": false,
-                            "defaultValue": "false",
-                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
-                        }
-                    ],
-                    "isHidden": false
-                },
-                {
                     "name": "updateEntry",
                     "description": "Update LDAP Entry",
                     "params": [
@@ -235,41 +270,6 @@
                             "required": true,
                             "defaultValue": "REPLACE",
                             "description": "The update mode: ADD to add new attributes, REPLACE to overwrite existing values, or REMOVE to delete attributes."
-                        },
-                        {
-                            "name": "responseVariable",
-                            "type": "string",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "Name of the variable to which the output of the operation should be assigned."
-                        },
-                        {
-                            "name": "overwriteBody",
-                            "type": "checkbox",
-                            "required": false,
-                            "defaultValue": "false",
-                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
-                        }
-                    ],
-                    "isHidden": false
-                },
-                {
-                    "name": "updateName",
-                    "description": "Rename LDAP Entry",
-                    "params": [
-                        {
-                            "name": "oldName",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "The current fully qualified distinguished name (DN) of the LDAP entry. Example: cn=John Doe,ou=Users,dc=example,dc=com"
-                        },
-                        {
-                            "name": "newName",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "The new fully qualified distinguished name (DN) for the LDAP entry. Example: cn=John Smith,ou=Users,dc=example,dc=com"
                         },
                         {
                             "name": "responseVariable",
@@ -370,6 +370,13 @@
                             "required": false,
                             "defaultValue": "20",
                             "description": "Maximum number of connections per connection identity that can be maintained concurrently."
+                        },
+                        {
+                            "name": "binaryAttributes",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "A list of space-separated attribute names that should be treated as binary attributes. The values of these attributes will be returned as base64-encoded strings."
                         }
                     ]
                 }
